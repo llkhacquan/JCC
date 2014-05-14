@@ -19,7 +19,7 @@ public class JCCHandler {
 	final public static int CHECK_TYPE_OTHER = 4;
 
 	final public static String inputFile = "input.txt";
-	final public static String rulesFile = "C:/Users/wind/workspace/std/JCC.Core/src/core/rules.txt";
+	final public static String rulesFile = "src/core/rules.txt";
 
 	public Vector<Warning> warnings;
 
