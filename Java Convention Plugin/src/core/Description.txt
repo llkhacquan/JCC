@@ -1,0 +1,30 @@
+// <NAME_OfTheRule> ("active" | "deactive" "," RuleRange (, Argument())* )) ";"
+
+
+
+IF_NotAllowElse(deactive, file);
+IF_MustUseBracket(active, CONSTRUCTOR);
+SWITCH_MustHaveDefaultBranch(active, CONSTRUCTOR);
+
+// Naming Rules
+NAMING_(active, METHOD, startByUpperCaseLetter);
+
+
+WHILE_MustUseTrueConstantCondition(active, FILE);
+FILE_MustHavePackageDeclaration(active, FILE);
+FILE_MustHaveBlankLinesInEOF(active, FILE, "1");
+	// "1" is the number of blank lines
+	//string arguments indicate where to apply rules: file, method, block, constructor body, 
+FILE_NotAllowGotoStatement(active, FILE	, "method", "block", "constructor");
+GENERAL_MustUseAnnotation(active, METHOD, "field");
+COMMENT_MustHaveJavaDoc(active, METHOD, "field");
+COMMENT_MustHaveBlockComment(active, METHOD);
+CLASS_MustHaveDefaultConstructor(active, FILE);
+VARIABLE_NotAllowNameConflict(active, FILE);
+
+WRAPLINE_NotAllowTooLongLine(active, FILE, 80); //"80" is the upper bound of line's length
+
+NAMING_(active, METHOD, "condition of method name");
+NAMING_(active, CLASS, "condition of class name");
+
+INDENT(active, FILE, space = 4);

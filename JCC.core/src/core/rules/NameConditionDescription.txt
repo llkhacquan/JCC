@@ -1,0 +1,8 @@
+int modifier;
+String type
+String name
+
+NameCondition aClassNameCondition(){
+
+
+}

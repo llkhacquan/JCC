@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="jccmarker"
+         name="Java Convention Check Marker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <super
+            type="org.eclipse.core.resources.textmarker">
+      </super>
+      <attribute
+            name="Type">
+      </attribute>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.core.compilationParticipant">
+      <compilationParticipant
+            class="jcc.compilationParticipant.CompilationParticipantHandler"
+            id="Java Convention Plugin.compilationParticipant"
+            modifiesEnvironment="true">
+      </compilationParticipant>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaBrowsingPerspective">
+         <view
+               id="Java Convention Plugin.MarkerView"
+               minimized="false"
+               relationship="stack">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.markerSupport">
+      <markerContentGenerator
+            id="Java Convention Plugin.markerContentGenerator"
+            name="JCC marker Content Generation">
+         <markerTypeReference
+               id="org.eclipse.jdt.core.problem">
+         </markerTypeReference>
+         <markerTypeReference 
+         id="org.eclipse.core.resources.marker"/> 
+   <markerFieldReference 
+         id="org.eclipse.ui.ide.severityAndDescriptionField"/> 
+   <markerFieldReference 
+         id="org.eclipse.ui.ide.locationField"/> 
+   <markerFieldReference 
+         id="org.eclipse.ui.ide.markerType"/> 
+   <markerFieldReference 
+         id="org.eclipse.ui.ide.priorityField"/> 
+   <markerFieldReference 
+         id="org.eclipse.ui.ide.resourceField"/> 
+      </markerContentGenerator>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="jcc.preferences.PreferencesPageHandler"
+            id="jcc.preferences.PreferencesPageHandler"
+            name="JCC">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="jcc.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   
+
+</plugin>
