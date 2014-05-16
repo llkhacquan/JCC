@@ -7,3 +7,6 @@
 /OtherChecker.java
 /OtherCheckerConstants.java
 /OtherCheckerTokenManager.java
+/IndentChecker.java
+/IndentCheckerConstants.java
+/IndentCheckerTokenManager.java
