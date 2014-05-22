@@ -43,6 +43,7 @@ public class RulesManager {
 	}
 
 	public static RulesManager createRulesManager(String fileName) {
+		System.out.println("Load rules from file: " + fileName);
 		RulesManager rm = new RulesManager(fileName);
 		return rm;
 	}

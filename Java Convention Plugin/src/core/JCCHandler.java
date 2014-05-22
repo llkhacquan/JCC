@@ -4,8 +4,9 @@ import java.io.InputStream;
 import java.util.Scanner;
 import java.util.Vector;
 
-import core.checker.CommentChecker;
+import jcc.preferences.PreferencesPageHandler;
 import core.checker.Checker;
+import core.checker.CommentChecker;
 import core.checker.IndentChecker;
 import core.checker.NamingChecker;
 import core.checker.OtherChecker;
@@ -13,21 +14,21 @@ import core.rules.RulesManager;
 import core.warning.Warning;
 
 public class JCCHandler {
-	final public static int CHECK_TYPE_INDENT = 1;
 	final public static int CHECK_TYPE_COMMENT = 2;
+	final public static int CHECK_TYPE_INDENT = 1;
 	final public static int CHECK_TYPE_NAMING = 3;
 	final public static int CHECK_TYPE_OTHER = 4;
-
-	final public static String inputFile = "input.txt";
-	final public static String rulesFile = "C:/Users/wind/workspace/std/JCC.Core/src/core/rules.txt";
-
-	public Vector<Warning> warnings;
-
-	final static int EXIT = 0;
+	final public static int EXIT = 0;
 
 	private static Scanner in = new Scanner(System.in);
 
+	public static String rulesFile = PreferencesPageHandler.getRulesFile();
+
 	public static void main(String[] args) {
+		String inputFile = "input.txt";
+		rulesFile = "src/rules.txt";
+		
+		
 		Vector<Warning> warnings = null;
 		int type = 1;
 		while (type != EXIT) {
@@ -60,14 +61,17 @@ public class JCCHandler {
 	}
 
 	private Checker checker;
+
 	private CommentChecker commentChecker;
 	private IndentChecker indentChecker;
+	private NamingChecker namingChecker;
 	private OtherChecker otherChecker;
 
-	private NamingChecker namingChecker;
-	public static RulesManager rm = RulesManager.createRulesManager(rulesFile);
+	public Vector<Warning> warnings;
 
 	public JCCHandler(InputStream stream) {
+		
+		
 		namingChecker = new NamingChecker(stream);
 		commentChecker = new CommentChecker(stream);
 		indentChecker = new IndentChecker(stream);
@@ -87,7 +91,7 @@ public class JCCHandler {
 			break;
 		case CHECK_TYPE_OTHER:
 			checker = otherChecker;
-			otherChecker.rm = rm ;
+			otherChecker.rm = RulesManager.createRulesManager(rulesFile) ;
 			break;
 		default:
 			return warnings;

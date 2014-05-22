@@ -2,16 +2,18 @@ package jcc.preferences;
 
 import jcc.Activator;
 
+import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+
+import com.sun.xml.internal.ws.spi.db.FieldSetter;
+
+import core.rules.RulesManager;
 
 /**
  * This class represents a preference page that is contributed to the
@@ -24,16 +26,16 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
  * preferences can be accessed directly via the preference store.
  */
 
-public class PreferencesPageHandler extends PreferencePage implements
+public class PreferencesPageHandler extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {
 
-	private StyledText styledText;
-	
+	private FileFieldEditor rulesFile;
+
 	public PreferencesPageHandler() {
+		super(GRID);
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 		setDescription("This page contains preferences for JCC");
 	}
-
 
 	/*
 	 * (non-Javadoc)
@@ -42,29 +44,25 @@ public class PreferencesPageHandler extends PreferencePage implements
 	 * org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
 	public void init(IWorkbench workbench) {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		styledText.setText(store.getString(PreferenceConstants.RulesFileContent));
-	}
+		Activator.getDefault().getPreferenceStore();
 
+	}
 
 	@Override
-	protected Control createContents(Composite parent) {
-		Label label = new Label(parent, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false,
-				false));
-		label.setText("Rules");
-		styledText = new StyledText(parent, SWT.V_SCROLL
-				| SWT.H_SCROLL);
-		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		styledText.setText("");
-		
-		return new Composite(parent, SWT.NULL);
+	protected void createFieldEditors() {
+		// TODO Auto-generated method stub
+		rulesFile = new FileFieldEditor(PreferenceConstants.P_RULES_FILE,
+				"Rules file", true, getFieldEditorParent());
+		addField(rulesFile);
 	}
-	
-	public void 
 
-	private void storeValues() {
-		IPreferenceStore store = getPreferenceStore();
-		store.setValue(PreferenceConstants.RulesFileContent, styledText.getText());
+	@Override
+	public boolean performOk() {
+		return super.performOk();
 	}
-}	
+
+	public static String getRulesFile() {
+		return Activator.getDefault().getPreferenceStore()
+				.getString(PreferenceConstants.P_RULES_FILE);
+	}
+}
