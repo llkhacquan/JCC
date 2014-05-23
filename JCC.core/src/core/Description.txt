@@ -1,44 +1,23 @@
-Range: Range of the Rule : file, class, interface, enum, method, constructor
-Keyword: Java keyword: abstract	continue for new switch
-assert default	goto	package	synchronized
-boolean	do	if	private	this
-break	double	implements	protected	throw
-byte	else	import	public	throws
-case	enum	instanceof	return	transient
-catch	extends	int	short	try
-char	final	interface	static	void
-class	finally	long	strictfp	volatile
-const	float	native	super	while
+// <NAME_OfTheRule> ("active" | "deactive" "," RuleRange (, Argument())* )) ";"
 
-Structure of a Rule
 
-RuleType ( active, Range, parameter1, paramenter2,... );
 
-// Rule for If statement
 IF_NotAllowElse(deactive, file);
 IF_MustUseBracket(active, CONSTRUCTOR);
-
-// Rule for Switch statement
 SWITCH_MustHaveDefaultBranch(active, CONSTRUCTOR);
 
-// Rule for While statement
-WHILE_MustUseTrueConstantCondition(active, FILE);
-WHILE_MustUseBracket
-
 // Naming Rules
-/*
- * Element = class, interface, enum, variable, field, package,
- * ConditionOfNaming: Define later 
- */
-NAMING_(active, METHOD, Element, ConditionOfNaming);
+NAMING_(active, METHOD, startByUpperCaseLetter);
 
-// File's Rules
+
+WHILE_MustUseTrueConstantCondition(active, FILE);
 FILE_MustHavePackageDeclaration(active, FILE);
-
+FILE_MustHaveBlankLinesInEOF(active, FILE, "1");
+	// "1" is the number of blank lines
+	//string arguments indicate where to apply rules: file, method, block, constructor body, 
+FILE_NotAllowGotoStatement(active, FILE	, "method", "block", "constructor");
 GENERAL_MustUseAnnotation(active, METHOD, "field");
-
-// Comment Rules
-COMMENT_MustHaveJavaDoc(active, METHOD, field);
+COMMENT_MustHaveJavaDoc(active, METHOD, "field");
 COMMENT_MustHaveBlockComment(active, METHOD);
 CLASS_MustHaveDefaultConstructor(active, FILE);
 VARIABLE_NotAllowNameConflict(active, FILE);

@@ -2,6 +2,8 @@ package jcc.compilationParticipant;
 
 import java.util.Vector;
 
+import jcc.preferences.PreferencesPageHandler;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -11,17 +13,21 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.compiler.BuildContext;
 import org.eclipse.jdt.core.compiler.CompilationParticipant;
 
-import core.JCCHandler;
+import core.CheckOptions;
+import core.CoreHandler;
+import core.rules.RulesManager;
 import core.warning.Warning;
 
 public class CompilationParticipantHandler extends CompilationParticipant {
 
 	public static String MARKER_TYPE = IMarker.PROBLEM;
+	private RulesManager rm = RulesManager
+			.createRulesManager(PreferencesPageHandler.getRulesFile());
 
-	// private static final String MARKER_ID =
-	// FavoritesPlugin.ID + ".jccmarker";
-
-	private JCCHandler jccHandler = new JCCHandler(System.in);
+	private void reloadRulesManager() {
+		rm = RulesManager.createRulesManager(PreferencesPageHandler
+				.getRulesFile());
+	}
 
 	public CompilationParticipantHandler() {
 
@@ -62,14 +68,16 @@ public class CompilationParticipantHandler extends CompilationParticipant {
 				Vector<Warning> w;
 				IFile file = (IFile) resource;
 				try {
-					w = jccHandler.check(file.getContents(),
-							JCCHandler.CHECK_TYPE_OTHER);
-					// w.addAll(jccHandler.check(file.getContents(),
-					// JCCHandler.CHECK_TYPE_COMMENT));
-					// w.addAll(jccHandler.check(file.getContents(),
-					// JCCHandler.CHECK_TYPE_NAMING));
-					// w.addAll(jccHandler.check(file.getContents(),
-					// JCCHandler.CHECK_TYPE_INDENT));
+					if (PreferencesPageHandler.reloadRulesWhenCheck())
+						reloadRulesManager();
+					w = CoreHandler.check(file.getContents(), rm,
+							CheckOptions.CHECK_TYPE_COMMENT);
+					w = CoreHandler.check(file.getContents(), rm,
+							CheckOptions.CHECK_TYPE_INDENT);
+					w = CoreHandler.check(file.getContents(), rm,
+							CheckOptions.CHECK_TYPE_NAMING);
+					w = CoreHandler.check(file.getContents(), rm,
+							CheckOptions.CHECK_TYPE_OTHER);
 					for (int i = 0; i < w.size(); i++) {
 						IMarker marker = file.createMarker(MARKER_TYPE);
 						marker.setAttribute(IMarker.LOCATION,
@@ -78,7 +86,6 @@ public class CompilationParticipantHandler extends CompilationParticipant {
 								.toString());
 						marker.setAttribute(IMarker.LINE_NUMBER,
 								w.elementAt(i).pos.beginLine);
-
 						marker.setAttribute(IMarker.SEVERITY,
 								IMarker.SEVERITY_INFO);
 					}

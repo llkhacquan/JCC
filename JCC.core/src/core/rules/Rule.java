@@ -1,5 +1,6 @@
 package core.rules;
 
+import java.awt.font.NumericShaper.Range;
 import java.util.Vector;
 
 /**

@@ -1,4 +1,4 @@
-IF_NotAllowElse(active, CONSTRUCTOR);
+IF_NotAllowElse(active, FILE);
 FOR_MustUseBracket(active, FILE);
 // Constructor, class, interface, method, enum, file
 
@@ -8,4 +8,3 @@ SWITCH_MustHaveDefaultBranch(active, CONSTRUCTOR);
 
 
 Comment(active, "for", before);
-

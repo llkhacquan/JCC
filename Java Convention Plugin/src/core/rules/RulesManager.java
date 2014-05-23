@@ -30,20 +30,19 @@ public class RulesManager {
 			System.out.println(fileName + " not found");
 			return;
 		}
-		RulesReader reader = null;
-		reader = new RulesReader(fileName);
+		RulesReader rulesReader = null;
+		rulesReader = new RulesReader(fileName);
 		try {
-			reader.CompilationUnit();
+			rulesReader.CompilationUnit();
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
 		}
-		if (reader != null)
-			rules = reader.rules;
+		if (rulesReader != null)
+			rules = rulesReader.rules;
 
 	}
 
 	public static RulesManager createRulesManager(String fileName) {
-		System.out.println("Load rules from file: " + fileName);
 		RulesManager rm = new RulesManager(fileName);
 		return rm;
 	}

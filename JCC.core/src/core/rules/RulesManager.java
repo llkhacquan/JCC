@@ -1,6 +1,7 @@
 package core.rules;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Vector;
 
 public class RulesManager {
@@ -8,6 +9,18 @@ public class RulesManager {
 
 	private RulesManager() {
 		rules = null;
+	}
+	
+	private RulesManager(InputStream is){
+		RulesReader reader = null;
+		reader = new RulesReader(is);
+		try {
+			reader.CompilationUnit();
+		} catch (ParseException e) {
+			System.out.println(e.getMessage());
+		}
+		if (reader != null)
+			rules = reader.rules;
 	}
 
 	private RulesManager(String fileName) {
@@ -17,21 +30,25 @@ public class RulesManager {
 			System.out.println(fileName + " not found");
 			return;
 		}
-		RulesReader reader = null;
-		reader = new RulesReader(fileName);
+		RulesReader rulesReader = null;
+		rulesReader = new RulesReader(fileName);
 		try {
-			reader.CompilationUnit();
+			rulesReader.CompilationUnit();
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
 		}
-		if (reader != null)
-			rules = reader.rules;
+		if (rulesReader != null)
+			rules = rulesReader.rules;
 
 	}
 
 	public static RulesManager createRulesManager(String fileName) {
 		RulesManager rm = new RulesManager(fileName);
-
+		return rm;
+	}
+	
+	public static RulesManager createRulesManager(InputStream is){
+		RulesManager rm = new RulesManager(is);
 		return rm;
 	}
 

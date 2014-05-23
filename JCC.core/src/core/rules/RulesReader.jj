@@ -1,154 +1,7 @@
-options
-{
-  JAVA_UNICODE_ESCAPE = true;
-  ERROR_REPORTING = true;
-  STATIC = false;
-  COMMON_TOKEN_ACTION = false;
-  TOKEN_FACTORY = "Token";
-  JDK_VERSION = "1.5";
-}
-
-PARSER_BEGIN(RulesReader)
-
-package core.rules;
-
-import core.checker.*;
-
-import java.io.*;
-import java.util.Vector;
-
-/**
+options{	JAVA_UNICODE_ESCAPE = true;	ERROR_REPORTING = true;	STATIC = false;	COMMON_TOKEN_ACTION = false;	TOKEN_FACTORY = "Token";	JDK_VERSION = "1.5";}PARSER_BEGIN(RulesReader)package core.rules;import core.checker.*;import java.io.*;import java.util.Vector;/**
  * Grammar to parse Java version 1.5
  * @author Sreenivasa Viswanadha - Simplified and enhanced for 1.5
- */
-public class RulesReader
-{
-  public final Vector<Rule > rules = new Vector<Rule >();
-  public RulesReader(String fileName)
-   {
-      this(System.in);
-      try { ReInit(new FileInputStream(new File(fileName))); }
-      catch(Exception e) { e.printStackTrace(); }
-   }
-
-}
-
-PARSER_END(RulesReader)
-
-/* WHITE SPACE */
-
-SKIP :
-{
-  " "
-| "\t"
-| "\n"
-| "\r"
-| "\f"
-}
-
-/* COMMENTS */
-
-MORE :
-{
-  <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
-|
-  "/*" : IN_MULTI_LINE_COMMENT
-}
-
-SPECIAL_TOKEN :
-{
-  <SINGLE_LINE_COMMENT: "//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")?>
-}
-
-<IN_FORMAL_COMMENT>
-SPECIAL_TOKEN :
-{
-  <FORMAL_COMMENT: "*/" > : DEFAULT
-}
-
-<IN_MULTI_LINE_COMMENT>
-SPECIAL_TOKEN :
-{
-  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
-}
-
-<IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
-MORE :
-{
-  < ~[] >
-}
-
-/* ACTIVES */
-TOKEN :
-{
-  < ACTIVE : "active" >
-| 
-  < DEACTIVE : "deactive" >
-}
-
-/* LITERALS */
-
-TOKEN :
-{
-  < INTEGER_LITERAL :
-    < DECIMAL_LITERAL > ([ "l", "L" ])?
-  | < HEX_LITERAL > ([ "l", "L" ])?
-  | < OCTAL_LITERAL > ([ "l", "L" ])? >
-| < #DECIMAL_LITERAL : [ "1"-"9" ] ([ "0"-"9" ])* >
-| < #HEX_LITERAL : "0" [ "x", "X" ] ([ "0"-"9", "a"-"f", "A"-"F" ])+ >
-| < #OCTAL_LITERAL : "0" ([ "0"-"7" ])* >
-| < FLOATING_POINT_LITERAL :
-    < DECIMAL_FLOATING_POINT_LITERAL >
-  | < HEXADECIMAL_FLOATING_POINT_LITERAL >>
-| < #DECIMAL_FLOATING_POINT_LITERAL :
-    ([ "0"-"9" ])+ "." ([ "0"-"9" ])* (< DECIMAL_EXPONENT >)? ([ "f", "F", "d", "D" ])?
-  | "." ([ "0"-"9" ])+ (< DECIMAL_EXPONENT >)? ([ "f", "F", "d", "D" ])?
-  | ([ "0"-"9" ])+ < DECIMAL_EXPONENT > ([ "f", "F", "d", "D" ])?
-  | ([ "0"-"9" ])+ (< DECIMAL_EXPONENT >)? [ "f", "F", "d", "D" ] >
-| < #DECIMAL_EXPONENT : [ "e", "E" ] ([ "+", "-" ])? ([ "0"-"9" ])+ >
-| < #HEXADECIMAL_FLOATING_POINT_LITERAL :
-    "0" [ "x", "X" ] ([ "0"-"9", "a"-"f", "A"-"F" ])+ (".")? < HEXADECIMAL_EXPONENT > ([ "f", "F", "d", "D" ])?
-  | "0" [ "x", "X" ] ([ "0"-"9", "a"-"f", "A"-"F" ])* "." ([ "0"-"9", "a"-"f", "A"-"F" ])+ < HEXADECIMAL_EXPONENT > ([ "f", "F", "d", "D" ])? >
-| < #HEXADECIMAL_EXPONENT : [ "p", "P" ] ([ "+", "-" ])? ([ "0"-"9" ])+ >
-| < CHARACTER_LITERAL :
-    "'"
-    (
-      (~[ "'", "\\", "\n", "\r" ])
-    |
-      (
-        "\\"
-        (
-          [ "n", "t", "b", "r", "f", "\\", "'", "\"" ]
-        | [ "0"-"7" ] ([ "0"-"7" ])?
-        | [ "0"-"3" ] [ "0"-"7" ] [ "0"-"7" ]
-        )
-      )
-    )
-    "'" >
-| < STRING_LITERAL :
-    "\""
-    (
-      (~[ "\"", "\\", "\n", "\r" ])
-    |
-      (
-        "\\"
-        (
-          [ "n", "t", "b", "r", "f", "\\", "'", "\"" ]
-        | [ "0"-"7" ] ([ "0"-"7" ])?
-        | [ "0"-"3" ] [ "0"-"7" ] [ "0"-"7" ]
-        )
-      )
-    )*
-    "\"" >
-}
-
-/* IDENTIFIERS */
-
-TOKEN :
-{
-  < IDENTIFIER: <LETTER> (<PART_LETTER>)* >
-|
-  < #LETTER:
+ */public class RulesReader{	public final Vector < Rule > rules = new Vector < Rule > ();	public RulesReader(String fileName)	{		this (System.in);		try		{			ReInit(new FileInputStream(new File(fileName)));		}		catch (Exception e)		{			e.printStackTrace();		}	}}PARSER_END(RulesReader)/* WHITE SPACE */SKIP :{	" "|	"\t"|	"\n"|	"\r"|	"\f"}/* COMMENTS */MORE :{	< "/**" ~[ "/" ] >	{		input_stream.backup(1);	}	: IN_FORMAL_COMMENT|		"/*" : IN_MULTI_LINE_COMMENT}SPECIAL_TOKEN :{	< SINGLE_LINE_COMMENT :		"//" (~[ "\n", "\r" ])*		(			"\n"		|	"\r"		|	"\r\n"		)? >}< IN_FORMAL_COMMENT >SPECIAL_TOKEN :{	< FORMAL_COMMENT : "*/" > : DEFAULT}< IN_MULTI_LINE_COMMENT >SPECIAL_TOKEN :{	< MULTI_LINE_COMMENT : "*/" > : DEFAULT}< IN_FORMAL_COMMENT, IN_MULTI_LINE_COMMENT >MORE :{	< ~[ ] >}/* ACTIVES */TOKEN :{	< ACTIVE : "active" >|		< DEACTIVE : "deactive" >}/* LITERALS */TOKEN :{	< INTEGER_LITERAL :		< DECIMAL_LITERAL > ([ "l", "L" ])?	|	< HEX_LITERAL > ([ "l", "L" ])?	|	< OCTAL_LITERAL > ([ "l", "L" ])? >|	< #DECIMAL_LITERAL : [ "1"-"9" ] ([ "0"-"9" ])* >|	< #HEX_LITERAL : "0" [ "x", "X" ] ([ "0"-"9", "a"-"f", "A"-"F" ])+ >|	< #OCTAL_LITERAL : "0" ([ "0"-"7" ])* >|	< FLOATING_POINT_LITERAL :		< DECIMAL_FLOATING_POINT_LITERAL >	|	< HEXADECIMAL_FLOATING_POINT_LITERAL >>|	< #DECIMAL_FLOATING_POINT_LITERAL :		([ "0"-"9" ])+ "." ([ "0"-"9" ])* (< DECIMAL_EXPONENT >)? ([ "f", "F", "d", "D" ])?	|	"." ([ "0"-"9" ])+ (< DECIMAL_EXPONENT >)? ([ "f", "F", "d", "D" ])?	|	([ "0"-"9" ])+ < DECIMAL_EXPONENT > ([ "f", "F", "d", "D" ])?	|	([ "0"-"9" ])+ (< DECIMAL_EXPONENT >)? [ "f", "F", "d", "D" ] >|	< #DECIMAL_EXPONENT : [ "e", "E" ] ([ "+", "-" ])? ([ "0"-"9" ])+ >|	< #HEXADECIMAL_FLOATING_POINT_LITERAL :		"0" [ "x", "X" ] ([ "0"-"9", "a"-"f", "A"-"F" ])+ (".")? < HEXADECIMAL_EXPONENT > ([ "f", "F", "d", "D" ])?	|	"0" [ "x", "X" ] ([ "0"-"9", "a"-"f", "A"-"F" ])* "." ([ "0"-"9", "a"-"f", "A"-"F" ])+ < HEXADECIMAL_EXPONENT > ([ "f", "F", "d", "D" ])? >|	< #HEXADECIMAL_EXPONENT : [ "p", "P" ] ([ "+", "-" ])? ([ "0"-"9" ])+ >|	< CHARACTER_LITERAL :		"'"		(			(~[ "'", "\\", "\n", "\r" ])		|			(				"\\"				(					[ "n", "t", "b", "r", "f", "\\", "'", "\"" ]				|	[ "0"-"7" ] ([ "0"-"7" ])?				|	[ "0"-"3" ] [ "0"-"7" ] [ "0"-"7" ]				)			)		)		"'" >|	< STRING_LITERAL :		"\""		(			(~[ "\"", "\\", "\n", "\r" ])		|			(				"\\"				(					[ "n", "t", "b", "r", "f", "\\", "'", "\"" ]				|	[ "0"-"7" ] ([ "0"-"7" ])?				|	[ "0"-"3" ] [ "0"-"7" ] [ "0"-"7" ]				)			)		)*		"\"" >}/* IDENTIFIERS */TOKEN :{	< IDENTIFIER : < LETTER > (< PART_LETTER >)* >|		< #LETTER : 
       [  // all chars for which Character.isIdentifierStart is true
          "$",
          "A"-"Z",
@@ -789,22 +642,6 @@ TOKEN :
          "\uffe5"-"\uffe6",
          "\ufff9"-"\ufffb"
       ]
-  >
-}
-
-/* SEPARATORS */
-
-TOKEN :
-{
-  < LPAREN: "(" >
-| < RPAREN: ")" >
-}
-
-/*****************************************
+		>}/* SEPARATORS */TOKEN :{	< LPAREN : "(" >|	< RPAREN : ")" >}/*****************************************
  * THE RULES FILE GRAMMAR STARTS HERE *
- *****************************************/
-void CompilationUnit() :{  Rule r;}{  (    r = RuleDeclaration()    {
-      if (r!=null)      	rules.add(r);    }  )*  < EOF >}Rule RuleDeclaration() :{  String name;  boolean active;  Vector < String > args = new Vector < String > ();  String s;}{  name = RuleName() "(" active = Active()  [    ","     s = Argument()    {      args.add(s);    }    (      "," s = Argument()      {        args.add(s);      }    )*  ]  ")" ";"  {    Rule r = null;
-    try    {      r = new Rule(RuleType.valueOf(name), active, args);
-    } catch (Exception e)    {
-          }    return r;  }}String Argument() :{  Token t;}{  (    t = < STRING_LITERAL >  | t = < IDENTIFIER >  | t = < INTEGER_LITERAL >  )  {    return t.image;  }}String RuleName() :{  Token t;}{  t = < IDENTIFIER >  {    return t.image;  }}boolean Active() :{}{  < ACTIVE >  {    return true;  }| < DEACTIVE >  {    return false;  }}
+ *****************************************/void CompilationUnit() :{	Rule r;}{	(		r = RuleDeclaration()		{			if (r != null) rules.add(r);		}	)*	< EOF >}Rule RuleDeclaration() :{	String name;	boolean active;	Vector < String > args = new Vector < String > ();	String s;}{	name = RuleName() "(" active = Active()	[		"," s = Argument()		{			args.add(s);		}		(			"," s = Argument()			{				args.add(s);			}		)*	]	")" ";"	{		Rule r = null;		try		{			r = new Rule(RuleType.valueOf(name), active, args);		}		catch (Exception e)		{		}		return r;	}}String Argument() :{	Token t;}{	(		t = < STRING_LITERAL >	|	t = < IDENTIFIER >	|	t = < INTEGER_LITERAL >	)	{		return t.image;	}}String RuleName() :{	Token t;}{	t = < IDENTIFIER >	{		return t.image;	}}boolean Active() :{}{	< ACTIVE >	{		return true;	}|	< DEACTIVE >	{		return false;	}}

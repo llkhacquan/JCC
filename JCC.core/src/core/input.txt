@@ -20,8 +20,6 @@ public class JCCHandler {
 		 	// do something
 		 	break;
 		}
-		for (;;)
-		 break;
 	}
 
 	/*

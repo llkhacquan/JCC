@@ -17,14 +17,14 @@ public class OtherCheckImplements {
 		Token t = c.getToken(1);
 		WarningOther warning = null;
 		for (RuleRange rg : RuleRange.values()) {
-			if (!c.rm.isActive(RuleType.IF_MustUseBracket, rg))
+			if (!c.getRm().isActive(RuleType.IF_MustUseBracket, rg))
 				break;
 			if (t.image.equals("{"))
 				break;
 			if (!c.state.isInRange(rg))
 				break;
 
-			Rule r = c.rm.searchRule(RuleType.IF_MustUseBracket, rg);
+			Rule r = c.getRm().searchRule(RuleType.IF_MustUseBracket, rg);
 			Position pos = new Position(t);
 			String s[] = new String[] { r.getMessage(null) };
 			warning = new WarningOther(pos, null, s);
@@ -43,8 +43,8 @@ public class OtherCheckImplements {
 		Token t = c.getToken(0);
 		WarningOther warning = null;
 		for (RuleRange rg : RuleRange.values()) {
-			if (c.rm.isActive(RuleType.IF_NotAllowElse, rg)) {
-				Rule r = c.rm.searchRule(RuleType.IF_NotAllowElse, rg);
+			if (c.getRm().isActive(RuleType.IF_NotAllowElse, rg)) {
+				Rule r = c.getRm().searchRule(RuleType.IF_NotAllowElse, rg);
 				if (!c.state.isInRange(rg))
 					break;
 				Position pos = new Position(t);
@@ -68,8 +68,8 @@ public class OtherCheckImplements {
 		WarningOther warning = null;
 		Token t = c.getToken(1);
 		for (RuleRange rg : RuleRange.values()) {
-			if (c.rm.isActive(RuleType.SWITCH_MustHaveDefaultBranch, rg)) {
-				Rule r = c.rm.searchRule(RuleType.SWITCH_MustHaveDefaultBranch,
+			if (c.getRm().isActive(RuleType.SWITCH_MustHaveDefaultBranch, rg)) {
+				Rule r = c.getRm().searchRule(RuleType.SWITCH_MustHaveDefaultBranch,
 						rg);
 				if (!c.state.isInRange(rg) || c.state.switchHasDefault)
 					break;
@@ -88,8 +88,8 @@ public class OtherCheckImplements {
 	public static Warning WHILE_MustUseTrueConstantCondition(Checker c) {
 		WarningOther warning = null;
 		for (RuleRange rg : RuleRange.values()) {
-			if (c.rm.isActive(RuleType.WHILE_MustUseTrueConstantCondition, rg)) {
-				Rule r = c.rm.searchRule(
+			if (c.getRm().isActive(RuleType.WHILE_MustUseTrueConstantCondition, rg)) {
+				Rule r = c.getRm().searchRule(
 						RuleType.WHILE_MustUseTrueConstantCondition, rg);
 				if (!c.state.isInRange(rg))
 					break;
@@ -110,8 +110,8 @@ public class OtherCheckImplements {
 	public static Warning FILE_MustHavePackageDeclaration(Checker c) {
 		WarningOther warning = null;
 		RuleRange rg = RuleRange.FILE;
-		if (c.rm.isActive(RuleType.FILE_MustHavePackageDeclaration, rg)) {
-			Rule r = c.rm.searchRule(RuleType.FILE_MustHavePackageDeclaration,
+		if (c.getRm().isActive(RuleType.FILE_MustHavePackageDeclaration, rg)) {
+			Rule r = c.getRm().searchRule(RuleType.FILE_MustHavePackageDeclaration,
 					rg);
 			if (c.state.inPackage == null) {
 				Position pos = new Position(c.getToken(0));
@@ -129,8 +129,8 @@ public class OtherCheckImplements {
 		RuleRange[] rgs = new RuleRange[] { RuleRange.FILE, RuleRange.CLASS,
 				RuleRange.INTERFACE, RuleRange.ENUM };
 		for (RuleRange rg : rgs) {
-			if (c.rm.isActive(RuleType.CLASS_MustHaveDefaultConstructor, rg)) {
-				Rule r = c.rm.searchRule(
+			if (c.getRm().isActive(RuleType.CLASS_MustHaveDefaultConstructor, rg)) {
+				Rule r = c.getRm().searchRule(
 						RuleType.CLASS_MustHaveDefaultConstructor, rg);
 				if (!c.state.isInRange(rg))
 					break;
@@ -153,14 +153,14 @@ public class OtherCheckImplements {
 		Token t = c.getToken(1);
 		WarningOther warning = null;
 		for (RuleRange rg : RuleRange.values()) {
-			if (!c.rm.isActive(RuleType.FOR_MustUseBracket, rg))
+			if (!c.getRm().isActive(RuleType.FOR_MustUseBracket, rg))
 				break;
 			if (t.image.equals("{"))
 				break;
 			if (!c.state.isInRange(rg))
 				break;
 
-			Rule r = c.rm.searchRule(RuleType.FOR_MustUseBracket, rg);
+			Rule r = c.getRm().searchRule(RuleType.FOR_MustUseBracket, rg);
 			Position pos = new Position(t);
 			String s[] = new String[] { r.getMessage(null) };
 			warning = new WarningOther(pos, null, s);

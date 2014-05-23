@@ -1,5 +1,6 @@
 package core.warning;
 
+import core.checker.Token;
 import core.rules.Rule;
 
 public abstract class Warning {
