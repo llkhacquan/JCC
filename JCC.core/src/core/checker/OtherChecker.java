@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.Vector;
 import core.rules.*;
 import core.warning.*;
+import core.rules.implement.*;
 
 /**
  * Grammar to parse Java version 1.5
@@ -36,7 +37,7 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     } else {
       ;
     }
-        Warning w = OtherCheckImplements.FILE_MustHavePackageDeclaration(this);
+        Warning w = new FILE_MustHavePackageDeclaration().check(this, getToken(0));
         if (w!=null) warnings.add(w);
     label_1:
     while (true) {
@@ -303,7 +304,7 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
       ;
     }
     ClassOrInterfaceBody(isInterface);
-    Warning w = OtherCheckImplements.CLASS_MustHaveDefaultConstructor(this);
+    Warning w = new CLASS_MustHaveDefaultConstructor().check(this, getToken(0));
     if (w != null) warnings.add(w);
     state.inClass = inClass_;
         state.inInterface = inInterface_;
@@ -2722,7 +2723,7 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
         BlockStatement();
       }
     }
-    Warning w = OtherCheckImplements.SWITCH_MustHaveDefaultBranch(this);
+    Warning w = new SWITCH_MustHaveDefaultBranch().check(this, getToken(1));
     if (w != null) warnings.add(w);
     jj_consume_token(RBRACE);
         state.isInSwitch = inSwitch_;
@@ -2756,17 +2757,17 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     Expression();
     jj_consume_token(RPAREN);
     // check IF_MustUseBracket
-    w = OtherCheckImplements.IF_MustUseBracket(this);
+    w = new IF_MustUseBracket().check(this, getToken(1));
     if (w != null) warnings.add(w);
     Statement();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ELSE:
       t = jj_consume_token(ELSE);
       // check IF_NotAllowElse
-      w = OtherCheckImplements.IF_NotAllowElse(this);
+      w = new IF_NotAllowElse().check(this, getToken(0));
         if (w != null) warnings.add(w);
       // check IF_MustUseBracket
-      w = OtherCheckImplements.IF_MustUseBracket(this);
+      w = new IF_MustUseBracket().check(this, getToken(1));
       if (w != null) warnings.add(w);
       Statement();
       break;
@@ -2779,7 +2780,7 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
   final public void WhileStatement() throws ParseException {
     jj_consume_token(WHILE);
     jj_consume_token(LPAREN);
-    Warning w = OtherCheckImplements.WHILE_MustUseTrueConstantCondition(this);
+    Warning w = new WHILE_MustUseTrueConstantCondition().check(this);
     if (w!=null) warnings.add(w);
     Expression();
     jj_consume_token(RPAREN);
@@ -2959,7 +2960,7 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
       }
     }
     jj_consume_token(RPAREN);
-    Warning w = OtherCheckImplements.FOR_MustUseBracket(this);
+    Warning w = new FOR_MustUseBracket().check(this, getToken(1));
     if (w != null) warnings.add(w);
     Statement();
   }
@@ -3773,24 +3774,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     try { return !jj_3_44(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(43, xla); }
-  }
-
-  private boolean jj_3R_116() {
-    if (jj_3R_129()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_88() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_116()) {
-    jj_scanpos = xsp;
-    if (jj_3R_117()) {
-    jj_scanpos = xsp;
-    if (jj_3R_118()) return true;
-    }
-    }
-    return false;
   }
 
   private boolean jj_3R_102() {
@@ -6496,6 +6479,24 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     if (jj_3R_124()) {
     jj_scanpos = xsp;
     if (jj_3R_125()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_116() {
+    if (jj_3R_129()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_88() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_116()) {
+    jj_scanpos = xsp;
+    if (jj_3R_117()) {
+    jj_scanpos = xsp;
+    if (jj_3R_118()) return true;
+    }
     }
     return false;
   }

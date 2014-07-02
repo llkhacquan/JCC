@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.Vector;
 import core.rules.*;
 import core.warning.*;
+import core.rules.implement.*;
 
 /** Token Manager. */
 public class OtherCheckerTokenManager implements OtherCheckerConstants

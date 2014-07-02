@@ -2,8 +2,9 @@ package core.warning;
 
 public class WarningIndent extends Warning {
 
-	public WarningIndent(Position p, WarningSpecify specify, String[] args) {
-		super(p, WarningType.INDENT, specify, args);
+
+	public WarningIndent(Position pos, WarningSpecify specify, String[] args) {
+		super(pos, specify, args);
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package core.rules;
 
-import java.awt.font.NumericShaper.Range;
 import java.util.Vector;
 
 /**
@@ -60,7 +59,7 @@ public class Rule {
 	}
 
 	public String getMessage(String warningArgs[]) {
-		StringBuilder s = new StringBuilder(type.getMessage(ruleArgs));
+		StringBuilder s = new StringBuilder(type.getMessage(ruleArgs, specifiedRangeInArgs));
 		if (warningArgs != null) {
 			for (int i = 0; i < warningArgs.length; i++) {
 				int index = s.indexOf("%w");
@@ -72,6 +71,9 @@ public class Rule {
 		return s.toString();
 	}
 
+	/**
+	 * @return a string represent 
+	 */
 	public String getRule() {
 		StringBuilder s = new StringBuilder(type.name());
 		s.append("(");

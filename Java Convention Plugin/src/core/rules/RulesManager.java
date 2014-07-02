@@ -10,8 +10,8 @@ public class RulesManager {
 	private RulesManager() {
 		rules = null;
 	}
-	
-	private RulesManager(InputStream is){
+
+	private RulesManager(InputStream is) {
 		RulesReader reader = null;
 		reader = new RulesReader(is);
 		try {
@@ -46,26 +46,19 @@ public class RulesManager {
 		RulesManager rm = new RulesManager(fileName);
 		return rm;
 	}
-	
-	public static RulesManager createRulesManager(InputStream is){
+
+	public static RulesManager createRulesManager(InputStream is) {
 		RulesManager rm = new RulesManager(is);
 		return rm;
 	}
 
-	public boolean isActive(RuleType rt, RuleRange range) {
-		Rule r = searchRule(rt, range);
-		if (r != null)
-			return r.active;
-		else
-			return false;
-	}
-
-	public Rule searchRule(RuleType rt, RuleRange range) {
+	public Vector<Rule> searchRule(RuleType rt, RuleRange range) {
+		Vector<Rule> vr = new Vector<Rule>();
 		for (Rule r : rules) {
 			if (r.type == rt && r.range == range)
-				return r;
+				vr.add(r);
 		}
-		return null;
+		return vr;
 	}
 
 	public Vector<Rule> searchRule(RuleType rt) {

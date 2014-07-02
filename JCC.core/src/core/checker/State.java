@@ -5,6 +5,7 @@ import core.rules.RuleRange;
 public final class State {
 	public boolean isFinal;
 	public boolean isField;
+	public boolean isParameter;
 	public boolean isInSwitch;
 	public boolean switchHasDefault;
 
@@ -20,6 +21,8 @@ public final class State {
 	 * return if the state of current token is in the Range rg
 	 */
 	public boolean isInRange(RuleRange rg) {
+		if (rg == RuleRange.FILE)
+			return true;
 		if (inClass != null && rg.include(RuleRange.CLASS))
 			return true;
 		if (inInterface != null && rg.include(RuleRange.INTERFACE))
@@ -40,6 +43,7 @@ public final class State {
 	public void reset() {
 		isFinal = false;
 		isField = false;
+		isParameter = false;
 		isInSwitch = false;
 		switchHasDefault = false;
 		

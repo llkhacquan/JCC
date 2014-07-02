@@ -8,7 +8,7 @@ public class WarningNaming extends Warning {
 	 */
 
 	public WarningNaming(Position p, WarningSpecify specify, String[] args) {
-		super(p, WarningType.NAMING, specify, args);
+		super(p, specify, args);
 	}
 
 	@Override

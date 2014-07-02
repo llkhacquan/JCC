@@ -1,14 +1,16 @@
-package core;
+/** */
+package test;
 
 import core.checker.*;
 import java.io.InputStream;
 import java.util.Scanner;
 import java.util.Vector;
 
+/**/
 public class JCCHandler {
-	/**
-	 * Construtor
-	 */
+
+	/**/
+	public int T;
 	 
 	public JCCHandler(InputStream stream) {
 		if (test){
@@ -22,8 +24,7 @@ public class JCCHandler {
 		}
 	}
 
-	/*
-	 * A method
+	/**
 	 */
 	public Vector<Warning> check(InputStream is, int type) {
 		if (test){

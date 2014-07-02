@@ -65,19 +65,16 @@ public class CompilationParticipantHandler extends CompilationParticipant {
 
 		if (resource instanceof IFile) {
 			if (((IFile) resource).getFileExtension().equals("java")) {
-				Vector<Warning> w;
+				Vector<Warning> w = new Vector<Warning>();
 				IFile file = (IFile) resource;
 				try {
 					if (PreferencesPageHandler.reloadRulesWhenCheck())
 						reloadRulesManager();
-					w = CoreHandler.check(file.getContents(), rm,
-							CheckOptions.CHECK_TYPE_COMMENT);
-					w = CoreHandler.check(file.getContents(), rm,
-							CheckOptions.CHECK_TYPE_INDENT);
-					w = CoreHandler.check(file.getContents(), rm,
-							CheckOptions.CHECK_TYPE_NAMING);
-					w = CoreHandler.check(file.getContents(), rm,
-							CheckOptions.CHECK_TYPE_OTHER);
+					for (CheckOptions o : CheckOptions.values())
+						if (o != CheckOptions.CHECK_TYPE_INDENT)
+							w.addAll(CoreHandler.check(file.getContents(), rm,
+									o));
+
 					for (int i = 0; i < w.size(); i++) {
 						IMarker marker = file.createMarker(MARKER_TYPE);
 						marker.setAttribute(IMarker.LOCATION,

@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.Vector;
 import core.rules.*;
 import core.warning.*;
+import core.rules.implement.*;
 
 /**
  * Grammar to parse Java version 1.5
@@ -12,7 +13,8 @@ import core.warning.*;
  */
 public class CommentChecker extends Checker implements CommentCheckerConstants {
   public static boolean blockComment = false;
-
+  public static boolean javaDocComment = false;
+  public static boolean singleLineComment = false;
   public CommentChecker(String fileName)
   {
     this (System.in);
@@ -26,23 +28,22 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     }
   }
 
-  final public void MissingCommentWarning(WarningSpecify type) throws ParseException {
-  Token t;
-    if (blockComment) {if (true) return;}
-    int i = 0;
-    while (getToken(i).kind != IDENTIFIER) i++;
-    t = getToken(i);
-    Position pos = new Position(t.beginLine, t.endLine, t.beginColumn, t.endColumn);
-    String args [ ] = new String [ ]
-    {
-      t.image
-    }
-    ;
-    warnings.add(new WarningComment(pos, type, args));
-  }
+  final public void MissingCommentWarning(String type) throws ParseException {
+                if (!javaDocComment)
+                {
+                        int i = 0;
+                        while (getToken(i).kind != IDENTIFIER) i++;
+                        Warning w2 = new COMMENT_MustHaveJavaDoc().check(this, getToken(i), type);
+                        if (w2 != null) warnings.add(w2);
+                }
 
-  final public void Out(String s) throws ParseException {
-    System.out.print(s);
+                if (!blockComment)
+                {
+                        int i = 0;
+                        while (getToken(i).kind != IDENTIFIER) i++;
+                        Warning w = new COMMENT_MustHaveBlockComment().check(this, getToken(i), type);
+                        if (w != null) warnings.add(w);
+                }
   }
 
 /*****************************************
@@ -53,11 +54,6 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
  */
   final public void CompilationUnit() throws ParseException {
     if (jj_2_1(2147483647)) {
-      if (blockComment == false)
-      {
-        warnings.add(new WarningComment(new Position(1, 0, 0, 0),
-                WarningSpecify.COMMENT_BEGIN, null));
-      }
       PackageDeclaration();
     } else {
       ;
@@ -69,6 +65,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[0] = jj_gen;
         break label_1;
       }
       ImportDeclaration();
@@ -96,14 +93,16 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[1] = jj_gen;
         break label_2;
       }
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 125:
-      jj_consume_token(125);
+    case 129:
+      jj_consume_token(129);
       break;
     default:
+      jj_la1[2] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -111,6 +110,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(STUFF_TO_IGNORE);
       break;
     default:
+      jj_la1[3] = jj_gen;
       ;
     }
     jj_consume_token(0);
@@ -119,6 +119,17 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   final public void PackageDeclaration() throws ParseException {
     Modifiers();
     jj_consume_token(PACKAGE);
+                if (!blockComment)
+                {
+                        Warning w = new COMMENT_MustHaveBlockComment().check(this, getToken(1), "package");
+                        if (w != null) warnings.add(w);
+                }
+
+                if (!javaDocComment)
+                {
+                        Warning w = new COMMENT_MustHaveJavaDoc().check(this, getToken(1), "package");
+                        if (w != null) warnings.add(w);
+                }
     Name();
     jj_consume_token(SEMICOLON);
   }
@@ -130,6 +141,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(STATIC);
       break;
     default:
+      jj_la1[4] = jj_gen;
       ;
     }
     Name();
@@ -139,6 +151,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(STAR);
       break;
     default:
+      jj_la1[5] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
@@ -207,6 +220,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         Annotation();
         break;
       default:
+        jj_la1[6] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -252,11 +266,13 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         AnnotationTypeDeclaration(modifiers);
         break;
       default:
+        jj_la1[7] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
+      jj_la1[8] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -273,16 +289,18 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       isInterface = true;
       break;
     default:
+      jj_la1[9] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-    MissingCommentWarning(isInterface? WarningSpecify.COMMENT_INTERFACE : WarningSpecify.COMMENT_CLASS);
+    MissingCommentWarning(isInterface? "interface" : "class");
     jj_consume_token(IDENTIFIER);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LT:
       TypeParameters();
       break;
     default:
+      jj_la1[10] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -290,6 +308,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       ExtendsList(isInterface);
       break;
     default:
+      jj_la1[11] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -297,6 +316,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       ImplementsList(isInterface);
       break;
     default:
+      jj_la1[12] = jj_gen;
       ;
     }
     ClassOrInterfaceBody(isInterface);
@@ -313,6 +333,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[13] = jj_gen;
         break label_4;
       }
       jj_consume_token(COMMA);
@@ -332,6 +353,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[14] = jj_gen;
         break label_5;
       }
       jj_consume_token(COMMA);
@@ -342,13 +364,14 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
 
   final public void EnumDeclaration(int modifiers) throws ParseException {
     jj_consume_token(ENUM);
-    MissingCommentWarning(WarningSpecify.COMMENT_ENUM);
+    MissingCommentWarning("enum");
     jj_consume_token(IDENTIFIER);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case IMPLEMENTS:
       ImplementsList(false);
       break;
     default:
+      jj_la1[15] = jj_gen;
       ;
     }
     EnumBody();
@@ -383,6 +406,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       }
       break;
     default:
+      jj_la1[16] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -390,6 +414,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(COMMA);
       break;
     default:
+      jj_la1[17] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -429,12 +454,14 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           ;
           break;
         default:
+          jj_la1[18] = jj_gen;
           break label_7;
         }
         ClassOrInterfaceBodyDeclaration(false);
       }
       break;
     default:
+      jj_la1[19] = jj_gen;
       ;
     }
     jj_consume_token(RBRACE);
@@ -448,6 +475,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       Arguments();
       break;
     default:
+      jj_la1[20] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -455,6 +483,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       ClassOrInterfaceBody(false);
       break;
     default:
+      jj_la1[21] = jj_gen;
       ;
     }
   }
@@ -469,6 +498,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[22] = jj_gen;
         break label_8;
       }
       jj_consume_token(COMMA);
@@ -484,6 +514,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       TypeBound();
       break;
     default:
+      jj_la1[23] = jj_gen;
       ;
     }
   }
@@ -498,6 +529,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[24] = jj_gen;
         break label_9;
       }
       jj_consume_token(BIT_AND);
@@ -541,6 +573,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[25] = jj_gen;
         break label_10;
       }
       ClassOrInterfaceBodyDeclaration(isInterface);
@@ -592,6 +625,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           EnumDeclaration(modifiers);
           break;
         default:
+          jj_la1[26] = jj_gen;
           if (jj_2_4(2147483647)) {
             ConstructorDeclaration();
           } else if (jj_2_5(2147483647)) {
@@ -615,6 +649,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
               AnnotationTypeDeclaration(modifiers);
               break;
             default:
+              jj_la1[27] = jj_gen;
               jj_consume_token(-1);
               throw new ParseException();
             }
@@ -625,6 +660,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         jj_consume_token(SEMICOLON);
         break;
       default:
+        jj_la1[28] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -633,7 +669,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
 
   final public void FieldDeclaration(int modifiers) throws ParseException {
     Type();
-    MissingCommentWarning(WarningSpecify.COMMENT_FIELD);
+    MissingCommentWarning("field");
     VariableDeclarator();
     label_11:
     while (true) {
@@ -642,6 +678,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[29] = jj_gen;
         break label_11;
       }
       jj_consume_token(COMMA);
@@ -658,6 +695,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       VariableInitializer();
       break;
     default:
+      jj_la1[30] = jj_gen;
       ;
     }
   }
@@ -671,6 +709,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[31] = jj_gen;
         break label_12;
       }
       jj_consume_token(LBRACKET);
@@ -713,6 +752,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       Expression();
       break;
     default:
+      jj_la1[32] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -762,6 +802,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       }
       break;
     default:
+      jj_la1[33] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -769,6 +810,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(COMMA);
       break;
     default:
+      jj_la1[34] = jj_gen;
       ;
     }
     jj_consume_token(RBRACE);
@@ -780,10 +822,11 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       TypeParameters();
       break;
     default:
+      jj_la1[35] = jj_gen;
       ;
     }
     ResultType();
-    MissingCommentWarning(WarningSpecify.COMMENT_METHOD);
+    MissingCommentWarning("method");
     MethodDeclarator();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case THROWS:
@@ -791,6 +834,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       NameList();
       break;
     default:
+      jj_la1[36] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -801,6 +845,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(SEMICOLON);
       break;
     default:
+      jj_la1[37] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -816,6 +861,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[38] = jj_gen;
         break label_14;
       }
       jj_consume_token(LBRACKET);
@@ -855,6 +901,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           ;
           break;
         default:
+          jj_la1[39] = jj_gen;
           break label_15;
         }
         jj_consume_token(COMMA);
@@ -862,6 +909,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       }
       break;
     default:
+      jj_la1[40] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -880,11 +928,13 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         Annotation();
         break;
       default:
+        jj_la1[41] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
+      jj_la1[42] = jj_gen;
       ;
     }
     Type();
@@ -893,6 +943,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(ELLIPSIS);
       break;
     default:
+      jj_la1[43] = jj_gen;
       ;
     }
     VariableDeclaratorId();
@@ -904,9 +955,10 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       TypeParameters();
       break;
     default:
+      jj_la1[44] = jj_gen;
       ;
     }
-    MissingCommentWarning(WarningSpecify.COMMENT_CONSTRUCTOR);
+    MissingCommentWarning("constructor");
     jj_consume_token(IDENTIFIER);
     FormalParameters();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -915,6 +967,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       NameList();
       break;
     default:
+      jj_la1[45] = jj_gen;
       ;
     }
     jj_consume_token(LBRACE);
@@ -979,6 +1032,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[46] = jj_gen;
         break label_16;
       }
       BlockStatement();
@@ -994,6 +1048,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[47] = jj_gen;
         break label_17;
       }
       jj_consume_token(IDENTIFIER);
@@ -1010,6 +1065,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       TypeArguments();
       break;
     default:
+      jj_la1[48] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1020,6 +1076,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(SUPER);
       break;
     default:
+      jj_la1[49] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1033,6 +1090,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(STATIC);
       break;
     default:
+      jj_la1[50] = jj_gen;
       ;
     }
     Block();
@@ -1057,6 +1115,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         PrimitiveType();
         break;
       default:
+        jj_la1[51] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1099,6 +1158,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       }
       break;
     default:
+      jj_la1[52] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1138,6 +1198,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[53] = jj_gen;
         break label_21;
       }
       jj_consume_token(COMMA);
@@ -1167,10 +1228,12 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         WildcardBounds();
         break;
       default:
+        jj_la1[54] = jj_gen;
         ;
       }
       break;
     default:
+      jj_la1[55] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1187,6 +1250,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       ReferenceType();
       break;
     default:
+      jj_la1[56] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1219,6 +1283,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(DOUBLE);
       break;
     default:
+      jj_la1[57] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1241,6 +1306,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       Type();
       break;
     default:
+      jj_la1[58] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1269,6 +1335,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[59] = jj_gen;
         break label_23;
       }
       jj_consume_token(COMMA);
@@ -1328,6 +1395,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(ORASSIGN);
       break;
     default:
+      jj_la1[60] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1343,6 +1411,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       Expression();
       break;
     default:
+      jj_la1[61] = jj_gen;
       ;
     }
   }
@@ -1356,6 +1425,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[62] = jj_gen;
         break label_24;
       }
       jj_consume_token(SC_OR);
@@ -1372,6 +1442,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[63] = jj_gen;
         break label_25;
       }
       jj_consume_token(SC_AND);
@@ -1388,6 +1459,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[64] = jj_gen;
         break label_26;
       }
       jj_consume_token(BIT_OR);
@@ -1404,6 +1476,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[65] = jj_gen;
         break label_27;
       }
       jj_consume_token(XOR);
@@ -1420,6 +1493,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[66] = jj_gen;
         break label_28;
       }
       jj_consume_token(BIT_AND);
@@ -1437,6 +1511,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[67] = jj_gen;
         break label_29;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1447,6 +1522,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         jj_consume_token(NE);
         break;
       default:
+        jj_la1[68] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1462,6 +1538,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       Type();
       break;
     default:
+      jj_la1[69] = jj_gen;
       ;
     }
   }
@@ -1478,6 +1555,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[70] = jj_gen;
         break label_30;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1494,6 +1572,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         jj_consume_token(GE);
         break;
       default:
+        jj_la1[71] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1515,6 +1594,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         jj_consume_token(LSHIFT);
         break;
       default:
+        jj_la1[72] = jj_gen;
         if (jj_2_19(1)) {
           RSIGNEDSHIFT();
         } else if (jj_2_20(1)) {
@@ -1538,6 +1618,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[73] = jj_gen;
         break label_32;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1548,6 +1629,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         jj_consume_token(MINUS);
         break;
       default:
+        jj_la1[74] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1566,6 +1648,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[75] = jj_gen;
         break label_33;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1579,6 +1662,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         jj_consume_token(REM);
         break;
       default:
+        jj_la1[76] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1598,6 +1682,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         jj_consume_token(MINUS);
         break;
       default:
+        jj_la1[77] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1635,6 +1720,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       UnaryExpressionNotPlusMinus();
       break;
     default:
+      jj_la1[78] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1662,12 +1748,14 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         jj_consume_token(BANG);
         break;
       default:
+        jj_la1[79] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       UnaryExpression();
       break;
     default:
+      jj_la1[80] = jj_gen;
       if (jj_2_21(2147483647)) {
         CastExpression();
       } else {
@@ -1696,6 +1784,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           PostfixExpression();
           break;
         default:
+          jj_la1[81] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -1753,11 +1842,13 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           Literal();
           break;
         default:
+          jj_la1[82] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
+        jj_la1[83] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1777,11 +1868,13 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         jj_consume_token(DECR);
         break;
       default:
+        jj_la1[84] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
+      jj_la1[85] = jj_gen;
       ;
     }
   }
@@ -1801,6 +1894,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         UnaryExpressionNotPlusMinus();
         break;
       default:
+        jj_la1[86] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1838,6 +1932,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       Literal();
       break;
     default:
+      jj_la1[88] = jj_gen;
       if (jj_2_26(2147483647)) {
         label_35:
         while (true) {
@@ -1846,6 +1941,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
             ;
             break;
           default:
+            jj_la1[87] = jj_gen;
             break label_35;
           }
           jj_consume_token(IDENTIFIER);
@@ -1860,6 +1956,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           jj_consume_token(IDENTIFIER);
           break;
         default:
+          jj_la1[89] = jj_gen;
           if (jj_2_27(2147483647)) {
             ClassOrInterfaceType();
             jj_consume_token(DOT);
@@ -1877,6 +1974,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
               AllocationExpression();
               break;
             default:
+              jj_la1[90] = jj_gen;
               if (jj_2_28(2147483647)) {
                 ResultType();
                 jj_consume_token(DOT);
@@ -1887,6 +1985,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
                   Name();
                   break;
                 default:
+                  jj_la1[91] = jj_gen;
                   jj_consume_token(-1);
                   throw new ParseException();
                 }
@@ -1925,6 +2024,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         Arguments();
         break;
       default:
+        jj_la1[92] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1953,6 +2053,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       NullLiteral();
       break;
     default:
+      jj_la1[93] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1967,6 +2068,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(FALSE);
       break;
     default:
+      jj_la1[94] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2009,6 +2111,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       ArgumentList();
       break;
     default:
+      jj_la1[95] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -2023,6 +2126,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[96] = jj_gen;
         break label_36;
       }
       jj_consume_token(COMMA);
@@ -2045,6 +2149,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           TypeArguments();
           break;
         default:
+          jj_la1[97] = jj_gen;
           ;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2058,15 +2163,18 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
             ClassOrInterfaceBody(false);
             break;
           default:
+            jj_la1[98] = jj_gen;
             ;
           }
           break;
         default:
+          jj_la1[99] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
+        jj_la1[100] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2112,12 +2220,14 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
             ;
             break;
           default:
+            jj_la1[101] = jj_gen;
             break label_39;
           }
         }
         ArrayInitializer();
         break;
       default:
+        jj_la1[102] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2201,6 +2311,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         TryStatement();
         break;
       default:
+        jj_la1[103] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2216,6 +2327,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       Expression();
       break;
     default:
+      jj_la1[104] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
@@ -2285,6 +2397,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[105] = jj_gen;
         break label_40;
       }
       BlockStatement();
@@ -2342,6 +2455,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ClassOrInterfaceDeclaration(0);
         break;
       default:
+        jj_la1[106] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2359,6 +2473,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[107] = jj_gen;
         break label_41;
       }
       jj_consume_token(COMMA);
@@ -2438,15 +2553,18 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           Expression();
           break;
         default:
+          jj_la1[108] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
+        jj_la1[109] = jj_gen;
         ;
       }
       break;
     default:
+      jj_la1[110] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2466,6 +2584,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[111] = jj_gen;
         break label_42;
       }
       SwitchLabel();
@@ -2525,6 +2644,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           ;
           break;
         default:
+          jj_la1[112] = jj_gen;
           break label_43;
         }
         BlockStatement();
@@ -2545,6 +2665,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(COLON);
       break;
     default:
+      jj_la1[113] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2562,6 +2683,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       Statement();
       break;
     default:
+      jj_la1[114] = jj_gen;
       ;
     }
   }
@@ -2670,6 +2792,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           ForInit();
           break;
         default:
+          jj_la1[115] = jj_gen;
           ;
         }
         jj_consume_token(SEMICOLON);
@@ -2704,6 +2827,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           Expression();
           break;
         default:
+          jj_la1[116] = jj_gen;
           ;
         }
         jj_consume_token(SEMICOLON);
@@ -2734,10 +2858,12 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           ForUpdate();
           break;
         default:
+          jj_la1[117] = jj_gen;
           ;
         }
         break;
       default:
+        jj_la1[118] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2777,6 +2903,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         StatementExpressionList();
         break;
       default:
+        jj_la1[119] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2792,6 +2919,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[120] = jj_gen;
         break label_44;
       }
       jj_consume_token(COMMA);
@@ -2810,6 +2938,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(IDENTIFIER);
       break;
     default:
+      jj_la1[121] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
@@ -2822,6 +2951,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(IDENTIFIER);
       break;
     default:
+      jj_la1[122] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
@@ -2860,6 +2990,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       Expression();
       break;
     default:
+      jj_la1[123] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
@@ -2889,6 +3020,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[124] = jj_gen;
         break label_45;
       }
       jj_consume_token(CATCH);
@@ -2903,6 +3035,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       Block();
       break;
     default:
+      jj_la1[125] = jj_gen;
       ;
     }
   }
@@ -2945,6 +3078,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         MarkerAnnotation();
         break;
       default:
+        jj_la1[126] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2960,6 +3094,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       MemberValuePairs();
       break;
     default:
+      jj_la1[127] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -2987,6 +3122,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[128] = jj_gen;
         break label_46;
       }
       jj_consume_token(COMMA);
@@ -3038,6 +3174,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       ConditionalExpression();
       break;
     default:
+      jj_la1[129] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3091,10 +3228,12 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         jj_consume_token(COMMA);
         break;
       default:
+        jj_la1[130] = jj_gen;
         ;
       }
       break;
     default:
+      jj_la1[131] = jj_gen;
       ;
     }
     jj_consume_token(RBRACE);
@@ -3141,6 +3280,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
         ;
         break;
       default:
+        jj_la1[132] = jj_gen;
         break label_48;
       }
       AnnotationTypeMemberDeclaration();
@@ -3186,6 +3326,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           DefaultValue();
           break;
         default:
+          jj_la1[133] = jj_gen;
           ;
         }
         jj_consume_token(SEMICOLON);
@@ -3213,6 +3354,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
           FieldDeclaration(modifiers);
           break;
         default:
+          jj_la1[134] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -3222,6 +3364,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       jj_consume_token(SEMICOLON);
       break;
     default:
+      jj_la1[135] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3236,354 +3379,308 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_1(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(0, xla); }
   }
 
   private boolean jj_2_2(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_2(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(1, xla); }
   }
 
   private boolean jj_2_3(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_3(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(2, xla); }
   }
 
   private boolean jj_2_4(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_4(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(3, xla); }
   }
 
   private boolean jj_2_5(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_5(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(4, xla); }
   }
 
   private boolean jj_2_6(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_6(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(5, xla); }
   }
 
   private boolean jj_2_7(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_7(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(6, xla); }
   }
 
   private boolean jj_2_8(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_8(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(7, xla); }
   }
 
   private boolean jj_2_9(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_9(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(8, xla); }
   }
 
   private boolean jj_2_10(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_10(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(9, xla); }
   }
 
   private boolean jj_2_11(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_11(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(10, xla); }
   }
 
   private boolean jj_2_12(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_12(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(11, xla); }
   }
 
   private boolean jj_2_13(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_13(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(12, xla); }
   }
 
   private boolean jj_2_14(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_14(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(13, xla); }
   }
 
   private boolean jj_2_15(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_15(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(14, xla); }
   }
 
   private boolean jj_2_16(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_16(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(15, xla); }
   }
 
   private boolean jj_2_17(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_17(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(16, xla); }
   }
 
   private boolean jj_2_18(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_18(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(17, xla); }
   }
 
   private boolean jj_2_19(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_19(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(18, xla); }
   }
 
   private boolean jj_2_20(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_20(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(19, xla); }
   }
 
   private boolean jj_2_21(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_21(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(20, xla); }
   }
 
   private boolean jj_2_22(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_22(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(21, xla); }
   }
 
   private boolean jj_2_23(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_23(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(22, xla); }
   }
 
   private boolean jj_2_24(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_24(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(23, xla); }
   }
 
   private boolean jj_2_25(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_25(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(24, xla); }
   }
 
   private boolean jj_2_26(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_26(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(25, xla); }
   }
 
   private boolean jj_2_27(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_27(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(26, xla); }
   }
 
   private boolean jj_2_28(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_28(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(27, xla); }
   }
 
   private boolean jj_2_29(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_29(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(28, xla); }
   }
 
   private boolean jj_2_30(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_30(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(29, xla); }
   }
 
   private boolean jj_2_31(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_31(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(30, xla); }
   }
 
   private boolean jj_2_32(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_32(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(31, xla); }
   }
 
   private boolean jj_2_33(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_33(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(32, xla); }
   }
 
   private boolean jj_2_34(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_34(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(33, xla); }
   }
 
   private boolean jj_2_35(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_35(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(34, xla); }
   }
 
   private boolean jj_2_36(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_36(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(35, xla); }
   }
 
   private boolean jj_2_37(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_37(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(36, xla); }
   }
 
   private boolean jj_2_38(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_38(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(37, xla); }
   }
 
   private boolean jj_2_39(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_39(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(38, xla); }
   }
 
   private boolean jj_2_40(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_40(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(39, xla); }
   }
 
   private boolean jj_2_41(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_41(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(40, xla); }
   }
 
   private boolean jj_2_42(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_42(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(41, xla); }
   }
 
   private boolean jj_2_43(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_43(); }
     catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(42, xla); }
   }
 
   private boolean jj_2_44(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_44(); }
     catch(LookaheadSuccess ls) { return true; }
-  }
-
-  private boolean jj_3R_143() {
-    if (jj_3R_151()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_199()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_194() {
-    if (jj_scan_token(SC_AND)) return true;
-    if (jj_3R_143()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_135() {
-    if (jj_3R_143()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_194()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_189() {
-    if (jj_scan_token(SC_OR)) return true;
-    if (jj_3R_135()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_125() {
-    if (jj_3R_135()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_189()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_100() {
-    if (jj_3R_125()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_171()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3R_71() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(87)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(112)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(113)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(117)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(110)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(111)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(118)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(119)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(120)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(114)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(116)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(115)) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    return false;
+    finally { jj_save(43, xla); }
   }
 
   private boolean jj_3_17() {
@@ -3640,7 +3737,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_80() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(60)) {
+    if (jj_scan_token(64)) {
     jj_scanpos = xsp;
     if (jj_3R_110()) return true;
     }
@@ -3655,21 +3752,21 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_76() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(12)) {
+    if (jj_scan_token(16)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(17)) {
+    if (jj_scan_token(21)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(14)) {
+    if (jj_scan_token(18)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(48)) {
+    if (jj_scan_token(52)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(37)) {
+    if (jj_scan_token(41)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(39)) {
+    if (jj_scan_token(43)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(30)) {
+    if (jj_scan_token(34)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(23)) return true;
+    if (jj_scan_token(27)) return true;
     }
     }
     }
@@ -3832,7 +3929,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     xsp = jj_scanpos;
     if (jj_3R_297()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(83)) return true;
+    if (jj_scan_token(87)) return true;
     }
     return false;
   }
@@ -3851,12 +3948,6 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       xsp = jj_scanpos;
       if (jj_3_14()) { jj_scanpos = xsp; break; }
     }
-    return false;
-  }
-
-  private boolean jj_3R_273() {
-    if (jj_scan_token(THROWS)) return true;
-    if (jj_3R_281()) return true;
     return false;
   }
 
@@ -3933,6 +4024,12 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_273() {
+    if (jj_scan_token(THROWS)) return true;
+    if (jj_3R_281()) return true;
+    return false;
+  }
+
   private boolean jj_3R_90() {
     if (jj_3R_76()) return true;
     return false;
@@ -3946,7 +4043,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       if (jj_3_43()) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_scan_token(84)) jj_scanpos = xsp;
+    if (jj_scan_token(88)) jj_scanpos = xsp;
     return false;
   }
 
@@ -3988,7 +4085,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_66() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(49)) jj_scanpos = xsp;
+    if (jj_scan_token(53)) jj_scanpos = xsp;
     if (jj_3R_91()) return true;
     return false;
   }
@@ -4062,9 +4159,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     xsp = jj_scanpos;
     if (jj_3R_95()) jj_scanpos = xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(54)) {
+    if (jj_scan_token(58)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(51)) return true;
+    if (jj_scan_token(55)) return true;
     }
     if (jj_3R_96()) return true;
     if (jj_scan_token(SEMICOLON)) return true;
@@ -4174,7 +4271,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     xsp = jj_scanpos;
     if (jj_3R_86()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(78)) return true;
+    if (jj_scan_token(82)) return true;
     }
     return false;
   }
@@ -4187,7 +4284,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_296() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(28)) {
+    if (jj_scan_token(32)) {
     jj_scanpos = xsp;
     if (jj_3R_299()) return true;
     }
@@ -4206,7 +4303,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     if (jj_3R_296()) jj_scanpos = xsp;
     if (jj_3R_64()) return true;
     xsp = jj_scanpos;
-    if (jj_scan_token(121)) jj_scanpos = xsp;
+    if (jj_scan_token(125)) jj_scanpos = xsp;
     if (jj_3R_282()) return true;
     return false;
   }
@@ -4336,7 +4433,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     xsp = jj_scanpos;
     if (jj_3R_274()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(83)) return true;
+    if (jj_scan_token(87)) return true;
     }
     return false;
   }
@@ -4402,7 +4499,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     xsp = jj_scanpos;
     if (jj_3R_243()) jj_scanpos = xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(84)) jj_scanpos = xsp;
+    if (jj_scan_token(88)) jj_scanpos = xsp;
     if (jj_scan_token(RBRACE)) return true;
     return false;
   }
@@ -4468,7 +4565,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     if (jj_scan_token(CONTINUE)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(74)) jj_scanpos = xsp;
+    if (jj_scan_token(78)) jj_scanpos = xsp;
     if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
@@ -4485,7 +4582,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     if (jj_scan_token(BREAK)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(74)) jj_scanpos = xsp;
+    if (jj_scan_token(78)) jj_scanpos = xsp;
     if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
@@ -4528,11 +4625,11 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       if (jj_3R_65()) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_scan_token(84)) {
+    if (jj_scan_token(88)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(87)) {
+    if (jj_scan_token(91)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(83)) return true;
+    if (jj_scan_token(87)) return true;
     }
     }
     return false;
@@ -4674,11 +4771,6 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_262() {
-    if (jj_3R_277()) return true;
-    return false;
-  }
-
   private boolean jj_3R_309() {
     if (jj_3R_84()) return true;
     if (jj_3R_64()) return true;
@@ -4705,7 +4797,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     jj_scanpos = xsp;
     if (jj_3R_246()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(83)) return true;
+    if (jj_scan_token(87)) return true;
     }
     }
     return false;
@@ -4768,6 +4860,11 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
 
   private boolean jj_3R_294() {
     if (jj_3R_96()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_262() {
+    if (jj_3R_277()) return true;
     return false;
   }
 
@@ -4925,9 +5022,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_315() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(99)) {
+    if (jj_scan_token(103)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(100)) {
+    if (jj_scan_token(104)) {
     jj_scanpos = xsp;
     if (jj_3R_321()) return true;
     }
@@ -4988,7 +5085,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     xsp = jj_scanpos;
     if (jj_3R_278()) jj_scanpos = xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(84)) jj_scanpos = xsp;
+    if (jj_scan_token(88)) jj_scanpos = xsp;
     xsp = jj_scanpos;
     if (jj_3R_279()) jj_scanpos = xsp;
     if (jj_scan_token(RBRACE)) return true;
@@ -5151,7 +5248,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_149() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(18)) {
+    if (jj_scan_token(22)) {
     jj_scanpos = xsp;
     if (jj_3R_169()) return true;
     }
@@ -5252,7 +5349,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     jj_scanpos = xsp;
     if (jj_3R_156()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(83)) {
+    if (jj_scan_token(87)) {
     jj_scanpos = xsp;
     if (jj_3R_157()) {
     jj_scanpos = xsp;
@@ -5545,9 +5642,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_152() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(58)) {
+    if (jj_scan_token(62)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(27)) return true;
+    if (jj_scan_token(31)) return true;
     }
     return false;
   }
@@ -5560,17 +5657,17 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_136() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(63)) {
-    jj_scanpos = xsp;
     if (jj_scan_token(67)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(72)) {
+    if (jj_scan_token(71)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(73)) {
+    if (jj_scan_token(76)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(77)) {
     jj_scanpos = xsp;
     if (jj_3R_144()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(42)) return true;
+    if (jj_scan_token(46)) return true;
     }
     }
     }
@@ -5612,21 +5709,6 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
 
   private boolean jj_3_32() {
     if (jj_3R_82()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_49() {
-    if (jj_3R_88()) return true;
-    return false;
-  }
-
-  private boolean jj_3_1() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_49()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(PACKAGE)) return true;
     return false;
   }
 
@@ -5680,12 +5762,27 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_49() {
+    if (jj_3R_88()) return true;
+    return false;
+  }
+
   private boolean jj_3_27() {
     if (jj_3R_79()) return true;
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(SUPER)) return true;
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_49()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(PACKAGE)) return true;
     return false;
   }
 
@@ -5851,9 +5948,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_234() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(99)) {
+    if (jj_scan_token(103)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(100)) return true;
+    if (jj_scan_token(104)) return true;
     }
     return false;
   }
@@ -5884,19 +5981,19 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     if (jj_scan_token(RPAREN)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(90)) {
+    if (jj_scan_token(94)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(89)) {
+    if (jj_scan_token(93)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(77)) {
+    if (jj_scan_token(81)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(74)) {
+    if (jj_scan_token(78)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(54)) {
+    if (jj_scan_token(58)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(51)) {
+    if (jj_scan_token(55)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(41)) {
+    if (jj_scan_token(45)) {
     jj_scanpos = xsp;
     if (jj_3R_126()) return true;
     }
@@ -5967,9 +6064,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_226() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(90)) {
+    if (jj_scan_token(94)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(89)) return true;
+    if (jj_scan_token(93)) return true;
     }
     if (jj_3R_218()) return true;
     return false;
@@ -6021,9 +6118,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_220() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(101)) {
+    if (jj_scan_token(105)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(102)) return true;
+    if (jj_scan_token(106)) return true;
     }
     if (jj_3R_218()) return true;
     return false;
@@ -6032,11 +6129,11 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_229() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(103)) {
+    if (jj_scan_token(107)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(104)) {
+    if (jj_scan_token(108)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(108)) return true;
+    if (jj_scan_token(112)) return true;
     }
     }
     if (jj_3R_218()) return true;
@@ -6056,9 +6153,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_225() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(101)) {
+    if (jj_scan_token(105)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(102)) return true;
+    if (jj_scan_token(106)) return true;
     }
     if (jj_3R_216()) return true;
     return false;
@@ -6087,7 +6184,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3_18() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(109)) {
+    if (jj_scan_token(113)) {
     jj_scanpos = xsp;
     if (jj_3_19()) {
     jj_scanpos = xsp;
@@ -6114,20 +6211,16 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_258() {
-    return false;
-  }
-
   private boolean jj_3R_219() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(88)) {
+    if (jj_scan_token(92)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(124)) {
+    if (jj_scan_token(128)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(94)) {
+    if (jj_scan_token(98)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(95)) return true;
+    if (jj_scan_token(99)) return true;
     }
     }
     }
@@ -6156,9 +6249,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   private boolean jj_3R_215() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(93)) {
+    if (jj_scan_token(97)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(96)) return true;
+    if (jj_scan_token(100)) return true;
     }
     if (jj_3R_195()) return true;
     return false;
@@ -6187,6 +6280,10 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       xsp = jj_scanpos;
       if (jj_3R_212()) { jj_scanpos = xsp; break; }
     }
+    return false;
+  }
+
+  private boolean jj_3R_258() {
     return false;
   }
 
@@ -6220,6 +6317,96 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_143() {
+    if (jj_3R_151()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_199()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_194() {
+    if (jj_scan_token(SC_AND)) return true;
+    if (jj_3R_143()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_135() {
+    if (jj_3R_143()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_194()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_189() {
+    if (jj_scan_token(SC_OR)) return true;
+    if (jj_3R_135()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_125() {
+    if (jj_3R_135()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_189()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_100() {
+    if (jj_3R_125()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_171()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_71() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(91)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(116)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(117)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(121)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(114)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(115)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(122)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(123)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(124)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(118)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(120)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(119)) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
   /** Generated Token Manager. */
   public CommentCheckerTokenManager token_source;
   JavaCharStream jj_input_stream;
@@ -6233,6 +6420,38 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
   /** Whether we are looking ahead. */
   private boolean jj_lookingAhead = false;
   private boolean jj_semLA;
+  private int jj_gen;
+  final private int[] jj_la1 = new int[136];
+  static private int[] jj_la1_0;
+  static private int[] jj_la1_1;
+  static private int[] jj_la1_2;
+  static private int[] jj_la1_3;
+  static private int[] jj_la1_4;
+  static {
+      jj_la1_init_0();
+      jj_la1_init_1();
+      jj_la1_init_2();
+      jj_la1_init_3();
+      jj_la1_init_4();
+   }
+   private static void jj_la1_init_0() {
+      jj_la1_0 = new int[] {0x0,0x20404000,0x0,0x0,0x0,0x0,0x4000,0x20400000,0x20404000,0x400000,0x0,0x40000000,0x0,0x0,0x0,0x0,0x4000,0x0,0x28654000,0x0,0x0,0x0,0x0,0x40000000,0x0,0x28654000,0x20400000,0x8250000,0x28654000,0x0,0x0,0x0,0x88250000,0x88250000,0x0,0x0,0x0,0x0,0x0,0x0,0x8254000,0x0,0x0,0x0,0x0,0x0,0x8d67c000,0x0,0x0,0x0,0x0,0x8250000,0x8250000,0x0,0x40000000,0x8250000,0x40000000,0x8250000,0x8250000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x88250000,0x0,0x0,0x88250000,0x80000000,0x0,0x0,0x0,0x0,0x0,0x80000000,0x0,0x0,0x0,0x0,0x80000000,0x80000000,0x88250000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8d278000,0x0,0x8d67c000,0x8d678000,0x0,0x0,0x0,0x88250000,0x2080000,0x8d67c000,0x2080000,0x10000000,0x88254000,0x88250000,0x88250000,0x88254000,0x88250000,0x0,0x0,0x0,0x88250000,0x100000,0x0,0x0,0x0,0x0,0x88250000,0x0,0x88250000,0x28654000,0x2000000,0x28650000,0x28654000,};
+   }
+   private static void jj_la1_init_1() {
+      jj_la1_1 = new int[] {0x80,0x22671401,0x0,0x0,0x200000,0x0,0x22671001,0x400,0x22671401,0x400,0x0,0x0,0x40,0x0,0x0,0x40,0x22671001,0x0,0x22771e05,0x0,0x0,0x0,0x0,0x0,0x0,0x22771e05,0x400,0x100a04,0x22771e05,0x0,0x0,0x0,0x44906a04,0x44906a04,0x0,0x0,0x10000000,0x0,0x0,0x0,0x22771a05,0x1,0x1,0x0,0x0,0x10000000,0xefff7e2d,0x0,0x0,0x4800000,0x200000,0x100a04,0x100a04,0x0,0x800000,0x100a04,0x800000,0x100a04,0x100a04,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x44906a04,0x0,0x0,0x44906a04,0x44806000,0x0,0x0,0x0,0x0,0x0,0x40004000,0x800000,0x2000,0x0,0x0,0x40004000,0x40000000,0x44906a04,0x0,0x0,0x0,0x0,0x2000,0x0,0x0,0xcf986a2c,0x0,0xefff7e2d,0xcf986e2c,0x0,0x0,0x0,0x44906a04,0x0,0xefff7e2d,0x0,0x0,0x66f77a05,0x44906a04,0x44906a04,0x66f77a05,0x44906a04,0x0,0x0,0x0,0x44906a04,0x0,0x2,0x0,0x0,0x0,0x44906a04,0x0,0x44906a04,0x22771e05,0x0,0x100e04,0x22771e05,};
+   }
+   private static void jj_la1_init_2() {
+      jj_la1_2 = new int[] {0x0,0x4800002,0x0,0x0,0x0,0x2000000,0x4000002,0x4000000,0x4800002,0x0,0x10000000,0x0,0x0,0x1000000,0x1000000,0x0,0x4004002,0x1000000,0x14884003,0x800000,0x20000,0x80000,0x1000000,0x0,0x0,0x14884003,0x0,0x14004001,0x14804003,0x1000000,0x8000000,0x200000,0x600a7089,0x600a7089,0x1000000,0x10000000,0x0,0x880000,0x200000,0x1000000,0x4004002,0x4000000,0x4000000,0x0,0x10000000,0x0,0x48a708f,0x4000,0x10000000,0x0,0x0,0x0,0x4000,0x1000000,0x0,0x80004000,0x0,0x0,0x4001,0x1000000,0x8000000,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10000000,0x10000000,0x0,0x0,0x0,0x0,0x0,0x0,0x60027089,0x60000000,0x60000000,0x27089,0x60027088,0x20000,0x0,0x0,0x20000,0x4000,0x3088,0x0,0x20000,0x4000,0x2220000,0x3088,0x0,0x60027089,0x1000000,0x10000000,0x80000,0x220000,0x0,0x200000,0x200000,0x8a708d,0x0,0x48a708f,0x8a708d,0x1000000,0x8000000,0x8000000,0x27089,0x0,0x48a708f,0x0,0x0,0x402708b,0x60027089,0x27089,0x482708b,0x27089,0x1000000,0x4000,0x4000,0x60027089,0x0,0x0,0x4000000,0x4000,0x1000000,0x640a7089,0x1000000,0x640a7089,0x4804002,0x0,0x4004000,0x4804002,};
+   }
+   private static void jj_la1_init_3() {
+      jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x780,0x780,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20000000,0x0,0x0,0x180,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1ffc0000,0x0,0x20,0x40,0x4000,0x8000,0x2000,0x12,0x12,0x0,0xc,0xc,0x20000,0x600,0x600,0x11800,0x11800,0x600,0x780,0x0,0x0,0x0,0x0,0x0,0x180,0x180,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x780,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x180,0x1,0x180,0x180,0x0,0x1ffc0180,0x1ffc0180,0x180,0x0,0x180,0x0,0x0,0x180,0x780,0x180,0x180,0x180,0x0,0x0,0x0,0x780,0x0,0x0,0x0,0x0,0x0,0x780,0x0,0x780,0x0,0x0,0x0,0x0,};
+   }
+   private static void jj_la1_init_4() {
+      jj_la1_4 = new int[] {0x0,0x0,0x2,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+   }
+  final private JJCalls[] jj_2_rtns = new JJCalls[44];
+  private boolean jj_rescan = false;
+  private int jj_gc = 0;
 
   /** Constructor with InputStream. */
   public CommentChecker(java.io.InputStream stream) {
@@ -6244,6 +6463,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     token_source = new CommentCheckerTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
+    jj_gen = 0;
+    for (int i = 0; i < 136; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
@@ -6256,6 +6478,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     token_source.ReInit(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
+    jj_gen = 0;
+    for (int i = 0; i < 136; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Constructor. */
@@ -6264,6 +6489,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     token_source = new CommentCheckerTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
+    jj_gen = 0;
+    for (int i = 0; i < 136; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
@@ -6272,6 +6500,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     token_source.ReInit(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
+    jj_gen = 0;
+    for (int i = 0; i < 136; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Constructor with generated Token Manager. */
@@ -6279,6 +6510,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     token_source = tm;
     token = new Token();
     jj_ntk = -1;
+    jj_gen = 0;
+    for (int i = 0; i < 136; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
@@ -6286,6 +6520,9 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     token_source = tm;
     token = new Token();
     jj_ntk = -1;
+    jj_gen = 0;
+    for (int i = 0; i < 136; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -6294,9 +6531,21 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
     if (token.kind == kind) {
+      jj_gen++;
+      if (++jj_gc > 100) {
+        jj_gc = 0;
+        for (int i = 0; i < jj_2_rtns.length; i++) {
+          JJCalls c = jj_2_rtns[i];
+          while (c != null) {
+            if (c.gen < jj_gen) c.first = null;
+            c = c.next;
+          }
+        }
+      }
       return token;
     }
     token = oldToken;
+    jj_kind = kind;
     throw generateParseException();
   }
 
@@ -6313,6 +6562,11 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     } else {
       jj_scanpos = jj_scanpos.next;
     }
+    if (jj_rescan) {
+      int i = 0; Token tok = token;
+      while (tok != null && tok != jj_scanpos) { i++; tok = tok.next; }
+      if (tok != null) jj_add_error_token(kind, i);
+    }
     if (jj_scanpos.kind != kind) return true;
     if (jj_la == 0 && jj_scanpos == jj_lastpos) throw jj_ls;
     return false;
@@ -6324,6 +6578,7 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
+    jj_gen++;
     return token;
   }
 
@@ -6344,12 +6599,81 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
       return (jj_ntk = jj_nt.kind);
   }
 
+  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
+  private int[] jj_expentry;
+  private int jj_kind = -1;
+  private int[] jj_lasttokens = new int[100];
+  private int jj_endpos;
+
+  private void jj_add_error_token(int kind, int pos) {
+    if (pos >= 100) return;
+    if (pos == jj_endpos + 1) {
+      jj_lasttokens[jj_endpos++] = kind;
+    } else if (jj_endpos != 0) {
+      jj_expentry = new int[jj_endpos];
+      for (int i = 0; i < jj_endpos; i++) {
+        jj_expentry[i] = jj_lasttokens[i];
+      }
+      jj_entries_loop: for (java.util.Iterator<?> it = jj_expentries.iterator(); it.hasNext();) {
+        int[] oldentry = (int[])(it.next());
+        if (oldentry.length == jj_expentry.length) {
+          for (int i = 0; i < jj_expentry.length; i++) {
+            if (oldentry[i] != jj_expentry[i]) {
+              continue jj_entries_loop;
+            }
+          }
+          jj_expentries.add(jj_expentry);
+          break jj_entries_loop;
+        }
+      }
+      if (pos != 0) jj_lasttokens[(jj_endpos = pos) - 1] = kind;
+    }
+  }
+
   /** Generate ParseException. */
   public ParseException generateParseException() {
-    Token errortok = token.next;
-    int line = errortok.beginLine, column = errortok.beginColumn;
-    String mess = (errortok.kind == 0) ? tokenImage[0] : errortok.image;
-    return new ParseException("Parse error at line " + line + ", column " + column + ".  Encountered: " + mess);
+    jj_expentries.clear();
+    boolean[] la1tokens = new boolean[131];
+    if (jj_kind >= 0) {
+      la1tokens[jj_kind] = true;
+      jj_kind = -1;
+    }
+    for (int i = 0; i < 136; i++) {
+      if (jj_la1[i] == jj_gen) {
+        for (int j = 0; j < 32; j++) {
+          if ((jj_la1_0[i] & (1<<j)) != 0) {
+            la1tokens[j] = true;
+          }
+          if ((jj_la1_1[i] & (1<<j)) != 0) {
+            la1tokens[32+j] = true;
+          }
+          if ((jj_la1_2[i] & (1<<j)) != 0) {
+            la1tokens[64+j] = true;
+          }
+          if ((jj_la1_3[i] & (1<<j)) != 0) {
+            la1tokens[96+j] = true;
+          }
+          if ((jj_la1_4[i] & (1<<j)) != 0) {
+            la1tokens[128+j] = true;
+          }
+        }
+      }
+    }
+    for (int i = 0; i < 131; i++) {
+      if (la1tokens[i]) {
+        jj_expentry = new int[1];
+        jj_expentry[0] = i;
+        jj_expentries.add(jj_expentry);
+      }
+    }
+    jj_endpos = 0;
+    jj_rescan_token();
+    jj_add_error_token(0, 0);
+    int[][] exptokseq = new int[jj_expentries.size()][];
+    for (int i = 0; i < jj_expentries.size(); i++) {
+      exptokseq[i] = jj_expentries.get(i);
+    }
+    return new ParseException(token, exptokseq, tokenImage);
   }
 
   /** Enable tracing. */
@@ -6358,6 +6682,84 @@ public class CommentChecker extends Checker implements CommentCheckerConstants {
 
   /** Disable tracing. */
   final public void disable_tracing() {
+  }
+
+  private void jj_rescan_token() {
+    jj_rescan = true;
+    for (int i = 0; i < 44; i++) {
+    try {
+      JJCalls p = jj_2_rtns[i];
+      do {
+        if (p.gen > jj_gen) {
+          jj_la = p.arg; jj_lastpos = jj_scanpos = p.first;
+          switch (i) {
+            case 0: jj_3_1(); break;
+            case 1: jj_3_2(); break;
+            case 2: jj_3_3(); break;
+            case 3: jj_3_4(); break;
+            case 4: jj_3_5(); break;
+            case 5: jj_3_6(); break;
+            case 6: jj_3_7(); break;
+            case 7: jj_3_8(); break;
+            case 8: jj_3_9(); break;
+            case 9: jj_3_10(); break;
+            case 10: jj_3_11(); break;
+            case 11: jj_3_12(); break;
+            case 12: jj_3_13(); break;
+            case 13: jj_3_14(); break;
+            case 14: jj_3_15(); break;
+            case 15: jj_3_16(); break;
+            case 16: jj_3_17(); break;
+            case 17: jj_3_18(); break;
+            case 18: jj_3_19(); break;
+            case 19: jj_3_20(); break;
+            case 20: jj_3_21(); break;
+            case 21: jj_3_22(); break;
+            case 22: jj_3_23(); break;
+            case 23: jj_3_24(); break;
+            case 24: jj_3_25(); break;
+            case 25: jj_3_26(); break;
+            case 26: jj_3_27(); break;
+            case 27: jj_3_28(); break;
+            case 28: jj_3_29(); break;
+            case 29: jj_3_30(); break;
+            case 30: jj_3_31(); break;
+            case 31: jj_3_32(); break;
+            case 32: jj_3_33(); break;
+            case 33: jj_3_34(); break;
+            case 34: jj_3_35(); break;
+            case 35: jj_3_36(); break;
+            case 36: jj_3_37(); break;
+            case 37: jj_3_38(); break;
+            case 38: jj_3_39(); break;
+            case 39: jj_3_40(); break;
+            case 40: jj_3_41(); break;
+            case 41: jj_3_42(); break;
+            case 42: jj_3_43(); break;
+            case 43: jj_3_44(); break;
+          }
+        }
+        p = p.next;
+      } while (p != null);
+      } catch(LookaheadSuccess ls) { }
+    }
+    jj_rescan = false;
+  }
+
+  private void jj_save(int index, int xla) {
+    JJCalls p = jj_2_rtns[index];
+    while (p.gen > jj_gen) {
+      if (p.next == null) { p = p.next = new JJCalls(); break; }
+      p = p.next;
+    }
+    p.gen = jj_gen + xla - jj_la; p.first = token; p.arg = xla;
+  }
+
+  static final class JJCalls {
+    int gen;
+    Token first;
+    int arg;
+    JJCalls next;
   }
 
 }

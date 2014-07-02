@@ -5,6 +5,17 @@ FOR_MustUseBracket(active, FILE);
 IF_MustUseBracket(active, FILE);
 SWITCH_MustHaveDefaultBranch(active, CONSTRUCTOR);
 
+COMMENT_MustHaveBlockComment(active, FILE, class);
+COMMENT_MustHaveBlockComment(active, FILE, method);
+COMMENT_MustHaveBlockComment(active, FILE, package);
+COMMENT_MustHaveBlockComment(active, FILE, field);
 
+COMMENT_MustHaveJavaDoc(active, FILE, class);
+COMMENT_MustHaveJavaDoc(active, FILE, method);
+COMMENT_MustHaveJavaDoc(active, FILE, package);
+COMMENT_MustHaveJavaDoc(active, FILE, field);
 
-Comment(active, "for", before);
+NAMING_StartByLowerCase(active, FILE, field);
+NAMING_StartByLowerCase(active, FILE, variable);
+NAMING_StartByLowerCase(active, FILE, class);
+NAMING_StartByLowerCase(active, FILE, parameter);

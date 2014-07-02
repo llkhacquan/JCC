@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.Vector;
 import core.rules.*;
 import core.warning.*;
+import core.rules.implement.*;
 
 /** Token Manager. */
 public class NamingCheckerTokenManager implements NamingCheckerConstants
@@ -2081,7 +2082,7 @@ void TokenLexicalActions(Token matchedToken)
         image.append(jjstrLiteralImages[124]);
         lengthOfMatch = jjstrLiteralImages[124].length();
     matchedToken.kind = GT;
-    ((MyNamingToken) matchedToken).realKind = RUNSIGNEDSHIFT;
+    ((MyOtherToken) matchedToken).realKind = RUNSIGNEDSHIFT;
     input_stream.backup(2);
     matchedToken.image = ">";
          break;
@@ -2089,7 +2090,7 @@ void TokenLexicalActions(Token matchedToken)
         image.append(jjstrLiteralImages[125]);
         lengthOfMatch = jjstrLiteralImages[125].length();
     matchedToken.kind = GT;
-    ((MyNamingToken) matchedToken).realKind = RSIGNEDSHIFT;
+    ((MyOtherToken) matchedToken).realKind = RSIGNEDSHIFT;
     input_stream.backup(1);
     matchedToken.image = ">";
          break;

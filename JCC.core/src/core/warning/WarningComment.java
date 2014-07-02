@@ -2,13 +2,10 @@ package core.warning;
 
 public class WarningComment extends Warning {
 
-	/*
-	 * args[0] = kind/type
-	 * args[1] = name
-	 */
 
-	public WarningComment(Position p, WarningSpecify specify, String[] args) {
-		super(p, WarningType.COMMENT, specify, args);
+
+	public WarningComment(Position pos, WarningSpecify specify, String[] args) {
+		super(pos, specify, args);
 	}
 
 	@Override
