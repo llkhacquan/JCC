@@ -881,6 +881,7 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
 /* Return the number of parameters*/
   final public int FormalParameters() throws ParseException {
   int count = 0;
+  state.isParameter = true;
     jj_consume_token(LPAREN);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ABSTRACT:
@@ -926,6 +927,7 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
       ;
     }
     jj_consume_token(RPAREN);
+        state.isParameter = false;
     {if (true) return count;}
     throw new Error("Missing return statement in function");
   }
@@ -2784,6 +2786,8 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     if (w!=null) warnings.add(w);
     Expression();
     jj_consume_token(RPAREN);
+        w = new WHILE_MustUseBracket().check(this, getToken(1));
+    if (w != null) warnings.add(w);
     Statement();
   }
 
@@ -3776,10 +3780,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     finally { jj_save(43, xla); }
   }
 
-  private boolean jj_3R_102() {
-    return false;
-  }
-
   private boolean jj_3R_73() {
     jj_lookingAhead = true;
     jj_semLA = getToken(1).kind == GT && ((MyOtherToken) getToken(1)).realKind == RSIGNEDSHIFT;
@@ -3796,6 +3796,17 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_74() {
+    jj_lookingAhead = true;
+    jj_semLA = getToken(1).kind == GT && ((MyOtherToken) getToken(1)).realKind == RUNSIGNEDSHIFT;
+    jj_lookingAhead = false;
+    if (!jj_semLA || jj_3R_102()) return true;
+    if (jj_scan_token(GT)) return true;
+    if (jj_scan_token(GT)) return true;
+    if (jj_scan_token(GT)) return true;
+    return false;
+  }
+
   private boolean jj_3R_70() {
     if (jj_scan_token(LT)) return true;
     if (jj_3R_99()) return true;
@@ -3804,17 +3815,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
       xsp = jj_scanpos;
       if (jj_3R_134()) { jj_scanpos = xsp; break; }
     }
-    if (jj_scan_token(GT)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_74() {
-    jj_lookingAhead = true;
-    jj_semLA = getToken(1).kind == GT && ((MyOtherToken) getToken(1)).realKind == RUNSIGNEDSHIFT;
-    jj_lookingAhead = false;
-    if (!jj_semLA || jj_3R_102()) return true;
-    if (jj_scan_token(GT)) return true;
-    if (jj_scan_token(GT)) return true;
     if (jj_scan_token(GT)) return true;
     return false;
   }
@@ -3834,11 +3834,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_15() {
-    if (jj_3R_70()) return true;
-    return false;
-  }
-
   private boolean jj_3R_188() {
     if (jj_scan_token(TRY)) return true;
     if (jj_3R_91()) return true;
@@ -3852,12 +3847,8 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_14() {
-    if (jj_scan_token(DOT)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_15()) jj_scanpos = xsp;
+  private boolean jj_3_15() {
+    if (jj_3R_70()) return true;
     return false;
   }
 
@@ -3875,14 +3866,32 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_13() {
-    if (jj_3R_70()) return true;
+  private boolean jj_3_14() {
+    if (jj_scan_token(DOT)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_15()) jj_scanpos = xsp;
     return false;
   }
 
   private boolean jj_3R_186() {
     if (jj_scan_token(THROW)) return true;
     if (jj_3R_72()) return true;
+    if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  private boolean jj_3_13() {
+    if (jj_3R_70()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_185() {
+    if (jj_scan_token(RETURN)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_312()) jj_scanpos = xsp;
     if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
@@ -3896,15 +3905,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
       xsp = jj_scanpos;
       if (jj_3_14()) { jj_scanpos = xsp; break; }
     }
-    return false;
-  }
-
-  private boolean jj_3R_185() {
-    if (jj_scan_token(RETURN)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_312()) jj_scanpos = xsp;
-    if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
@@ -3936,25 +3936,15 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_12() {
-    if (jj_scan_token(LBRACKET)) return true;
-    if (jj_scan_token(RBRACKET)) return true;
-    return false;
-  }
-
   private boolean jj_3R_330() {
     if (jj_scan_token(COMMA)) return true;
     if (jj_3R_177()) return true;
     return false;
   }
 
-  private boolean jj_3R_98() {
-    if (jj_3R_79()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_12()) { jj_scanpos = xsp; break; }
-    }
+  private boolean jj_3_12() {
+    if (jj_scan_token(LBRACKET)) return true;
+    if (jj_scan_token(RBRACKET)) return true;
     return false;
   }
 
@@ -3980,25 +3970,18 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_11() {
-    if (jj_scan_token(LBRACKET)) return true;
-    if (jj_scan_token(RBRACKET)) return true;
+  private boolean jj_3R_98() {
+    if (jj_3R_79()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_12()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
   private boolean jj_3R_328() {
     if (jj_3R_329()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_97() {
-    if (jj_3R_76()) return true;
-    Token xsp;
-    if (jj_3_11()) return true;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_11()) { jj_scanpos = xsp; break; }
-    }
     return false;
   }
 
@@ -4017,12 +4000,19 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_69() {
+  private boolean jj_3_11() {
+    if (jj_scan_token(LBRACKET)) return true;
+    if (jj_scan_token(RBRACKET)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_97() {
+    if (jj_3R_76()) return true;
     Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_97()) {
-    jj_scanpos = xsp;
-    if (jj_3R_98()) return true;
+    if (jj_3_11()) return true;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_11()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -4032,6 +4022,16 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     if (jj_3R_64()) return true;
     if (jj_scan_token(IDENTIFIER)) return true;
     if (jj_scan_token(COLON)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_69() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_97()) {
+    jj_scanpos = xsp;
+    if (jj_3R_98()) return true;
+    }
     return false;
   }
 
@@ -4062,16 +4062,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_90() {
-    if (jj_3R_76()) return true;
-    return false;
-  }
-
-  private boolean jj_3_10() {
-    if (jj_3R_69()) return true;
-    return false;
-  }
-
   private boolean jj_3R_182() {
     if (jj_scan_token(FOR)) return true;
     if (jj_scan_token(LPAREN)) return true;
@@ -4086,13 +4076,13 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_64() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_10()) {
-    jj_scanpos = xsp;
-    if (jj_3R_90()) return true;
-    }
+  private boolean jj_3R_90() {
+    if (jj_3R_76()) return true;
+    return false;
+  }
+
+  private boolean jj_3_10() {
+    if (jj_3R_69()) return true;
     return false;
   }
 
@@ -4104,6 +4094,16 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     if (jj_3R_72()) return true;
     if (jj_scan_token(RPAREN)) return true;
     if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_64() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_10()) {
+    jj_scanpos = xsp;
+    if (jj_3R_90()) return true;
+    }
     return false;
   }
 
@@ -4195,14 +4195,14 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_274() {
-    if (jj_scan_token(THROWS)) return true;
-    if (jj_3R_282()) return true;
+  private boolean jj_3R_268() {
+    if (jj_3R_68()) return true;
     return false;
   }
 
-  private boolean jj_3R_268() {
-    if (jj_3R_68()) return true;
+  private boolean jj_3R_274() {
+    if (jj_scan_token(THROWS)) return true;
+    if (jj_3R_282()) return true;
     return false;
   }
 
@@ -4268,12 +4268,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_285() {
-    if (jj_scan_token(LBRACKET)) return true;
-    if (jj_scan_token(RBRACKET)) return true;
-    return false;
-  }
-
   private boolean jj_3R_290() {
     if (jj_3R_84()) return true;
     Token xsp;
@@ -4283,6 +4277,12 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     xsp = jj_scanpos;
     if (jj_scan_token(123)) jj_scanpos = xsp;
     if (jj_3R_283()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_285() {
+    if (jj_scan_token(LBRACKET)) return true;
+    if (jj_scan_token(RBRACKET)) return true;
     return false;
   }
 
@@ -4373,17 +4373,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_273() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_3R_266()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_285()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
   private boolean jj_3R_177() {
     Token xsp;
     xsp = jj_scanpos;
@@ -4402,6 +4391,17 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_273() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_3R_266()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_285()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
   private boolean jj_3R_275() {
     if (jj_3R_91()) return true;
     return false;
@@ -4409,6 +4409,12 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
 
   private boolean jj_3R_272() {
     if (jj_3R_89()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_299() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_270()) return true;
     return false;
   }
 
@@ -4425,12 +4431,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     jj_scanpos = xsp;
     if (jj_scan_token(85)) return true;
     }
-    return false;
-  }
-
-  private boolean jj_3R_299() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_270()) return true;
     return false;
   }
 
@@ -4459,24 +4459,8 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_284() {
-    if (jj_scan_token(ASSIGN)) return true;
-    if (jj_3R_67()) return true;
-    return false;
-  }
-
   private boolean jj_3R_142() {
     if (jj_3R_150()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_245() {
-    if (jj_3R_67()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_7()) { jj_scanpos = xsp; break; }
-    }
     return false;
   }
 
@@ -4485,9 +4469,9 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_293() {
-    if (jj_scan_token(LBRACKET)) return true;
-    if (jj_scan_token(RBRACKET)) return true;
+  private boolean jj_3R_284() {
+    if (jj_scan_token(ASSIGN)) return true;
+    if (jj_3R_67()) return true;
     return false;
   }
 
@@ -4507,6 +4491,22 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
   private boolean jj_3R_140() {
     if (jj_3R_148()) return true;
     if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_245() {
+    if (jj_3R_67()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_7()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_293() {
+    if (jj_scan_token(LBRACKET)) return true;
+    if (jj_scan_token(RBRACKET)) return true;
     return false;
   }
 
@@ -4532,6 +4532,17 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_91() {
+    if (jj_scan_token(LBRACE)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_121()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(RBRACE)) return true;
+    return false;
+  }
+
   private boolean jj_3R_93() {
     if (jj_3R_72()) return true;
     return false;
@@ -4549,17 +4560,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     jj_scanpos = xsp;
     if (jj_3R_93()) return true;
     }
-    return false;
-  }
-
-  private boolean jj_3R_91() {
-    if (jj_scan_token(LBRACE)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_121()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(RBRACE)) return true;
     return false;
   }
 
@@ -4594,12 +4594,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_271() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_270()) return true;
-    return false;
-  }
-
   private boolean jj_3R_176() {
     if (jj_scan_token(ASSERT)) return true;
     if (jj_3R_72()) return true;
@@ -4610,6 +4604,12 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_271() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_270()) return true;
+    return false;
+  }
+
   private boolean jj_3R_169() {
     if (jj_3R_188()) return true;
     return false;
@@ -4617,6 +4617,21 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
 
   private boolean jj_3R_168() {
     if (jj_3R_187()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_167() {
+    if (jj_3R_186()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_166() {
+    if (jj_3R_185()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_165() {
+    if (jj_3R_184()) return true;
     return false;
   }
 
@@ -4632,8 +4647,8 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_167() {
-    if (jj_3R_186()) return true;
+  private boolean jj_3R_164() {
+    if (jj_3R_183()) return true;
     return false;
   }
 
@@ -4661,13 +4676,13 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_166() {
-    if (jj_3R_185()) return true;
+  private boolean jj_3R_163() {
+    if (jj_3R_182()) return true;
     return false;
   }
 
-  private boolean jj_3R_165() {
-    if (jj_3R_184()) return true;
+  private boolean jj_3R_162() {
+    if (jj_3R_181()) return true;
     return false;
   }
 
@@ -4680,33 +4695,8 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_164() {
-    if (jj_3R_183()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_163() {
-    if (jj_3R_182()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_162() {
-    if (jj_3R_181()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_254() {
-    if (jj_3R_259()) return true;
-    return false;
-  }
-
   private boolean jj_3R_161() {
     if (jj_3R_180()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_253() {
-    if (jj_3R_258()) return true;
     return false;
   }
 
@@ -4720,14 +4710,19 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_254() {
+    if (jj_3R_259()) return true;
+    return false;
+  }
+
   private boolean jj_3R_158() {
     if (jj_3R_177()) return true;
     if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
-  private boolean jj_3R_252() {
-    if (jj_3R_257()) return true;
+  private boolean jj_3R_253() {
+    if (jj_3R_258()) return true;
     return false;
   }
 
@@ -4741,13 +4736,8 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_251() {
-    if (jj_3R_256()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_250() {
-    if (jj_3R_255()) return true;
+  private boolean jj_3R_252() {
+    if (jj_3R_257()) return true;
     return false;
   }
 
@@ -4808,13 +4798,29 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_238() {
+    if (jj_3R_70()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_251() {
+    if (jj_3R_256()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_250() {
+    if (jj_3R_255()) return true;
+    return false;
+  }
+
   private boolean jj_3R_249() {
     if (jj_3R_150()) return true;
     return false;
   }
 
-  private boolean jj_3R_238() {
-    if (jj_3R_70()) return true;
+  private boolean jj_3R_243() {
+    if (jj_scan_token(LBRACKET)) return true;
+    if (jj_scan_token(RBRACKET)) return true;
     return false;
   }
 
@@ -4841,12 +4847,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_243() {
-    if (jj_scan_token(LBRACKET)) return true;
-    if (jj_scan_token(RBRACKET)) return true;
-    return false;
-  }
-
   private boolean jj_3R_241() {
     Token xsp;
     if (jj_3R_243()) return true;
@@ -4861,6 +4861,11 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
   private boolean jj_3_35() {
     if (jj_scan_token(LBRACKET)) return true;
     if (jj_scan_token(RBRACKET)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_242() {
+    if (jj_3R_244()) return true;
     return false;
   }
 
@@ -4879,11 +4884,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     if (jj_scan_token(85)) return true;
     }
     }
-    return false;
-  }
-
-  private boolean jj_3R_242() {
-    if (jj_3R_244()) return true;
     return false;
   }
 
@@ -4939,11 +4939,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_296() {
-    if (jj_3R_244()) return true;
-    return false;
-  }
-
   private boolean jj_3R_240() {
     if (jj_3R_96()) return true;
     Token xsp;
@@ -4954,6 +4949,11 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
 
   private boolean jj_3R_239() {
     if (jj_3R_237()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_296() {
+    if (jj_3R_244()) return true;
     return false;
   }
 
@@ -4977,17 +4977,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_139() {
-    if (jj_scan_token(EXTENDS)) return true;
-    if (jj_3R_79()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_147()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
   private boolean jj_3R_81() {
     Token xsp;
     xsp = jj_scanpos;
@@ -5005,22 +4994,20 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_139() {
+    if (jj_scan_token(EXTENDS)) return true;
+    if (jj_3R_79()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_147()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
   private boolean jj_3R_143() {
     if (jj_scan_token(COMMA)) return true;
     if (jj_3R_72()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_119() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_132()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3R_295() {
-    if (jj_3R_96()) return true;
     return false;
   }
 
@@ -5036,6 +5023,19 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
 
   private boolean jj_3R_123() {
     if (jj_3R_135()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_119() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_132()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_295() {
+    if (jj_3R_96()) return true;
     return false;
   }
 
@@ -5081,17 +5081,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_62() {
-    if (jj_3R_84()) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_295()) jj_scanpos = xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_296()) jj_scanpos = xsp;
-    return false;
-  }
-
   private boolean jj_3R_137() {
     Token xsp;
     xsp = jj_scanpos;
@@ -5114,8 +5103,14 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_289() {
-    if (jj_3R_247()) return true;
+  private boolean jj_3R_62() {
+    if (jj_3R_84()) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_295()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_296()) jj_scanpos = xsp;
     return false;
   }
 
@@ -5137,9 +5132,26 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_289() {
+    if (jj_3R_247()) return true;
+    return false;
+  }
+
   private boolean jj_3R_108() {
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_107() {
+    if (jj_scan_token(LBRACKET)) return true;
+    if (jj_3R_72()) return true;
+    if (jj_scan_token(RBRACKET)) return true;
+    return false;
+  }
+
+  private boolean jj_3_32() {
+    if (jj_3R_82()) return true;
     return false;
   }
 
@@ -5153,26 +5165,8 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_107() {
-    if (jj_scan_token(LBRACKET)) return true;
-    if (jj_3R_72()) return true;
-    if (jj_scan_token(RBRACKET)) return true;
-    return false;
-  }
-
   private boolean jj_3R_263() {
     if (jj_3R_278()) return true;
-    return false;
-  }
-
-  private boolean jj_3_32() {
-    if (jj_3R_82()) return true;
-    return false;
-  }
-
-  private boolean jj_3_3() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_62()) return true;
     return false;
   }
 
@@ -5195,18 +5189,9 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_279() {
+  private boolean jj_3_3() {
+    if (jj_scan_token(COMMA)) return true;
     if (jj_3R_62()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_3()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_262() {
-    if (jj_3R_278()) return true;
     return false;
   }
 
@@ -5250,6 +5235,26 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_279() {
+    if (jj_3R_62()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_3()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_262() {
+    if (jj_3R_278()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_213() {
+    if (jj_3R_85()) return true;
+    return false;
+  }
+
   private boolean jj_3R_264() {
     if (jj_scan_token(LBRACE)) return true;
     Token xsp;
@@ -5260,11 +5265,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     xsp = jj_scanpos;
     if (jj_3R_280()) jj_scanpos = xsp;
     if (jj_scan_token(RBRACE)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_213() {
-    if (jj_3R_85()) return true;
     return false;
   }
 
@@ -5325,16 +5325,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_255() {
-    if (jj_scan_token(ENUM)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_263()) jj_scanpos = xsp;
-    if (jj_3R_264()) return true;
-    return false;
-  }
-
   private boolean jj_3R_207() {
     Token xsp;
     while (true) {
@@ -5378,15 +5368,20 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_255() {
+    if (jj_scan_token(ENUM)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_263()) jj_scanpos = xsp;
+    if (jj_3R_264()) return true;
+    return false;
+  }
+
   private boolean jj_3R_82() {
     if (jj_scan_token(DOT)) return true;
     if (jj_3R_70()) return true;
     if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_261() {
-    if (jj_3R_277()) return true;
     return false;
   }
 
@@ -5395,15 +5390,20 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_288() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_79()) return true;
+  private boolean jj_3R_261() {
+    if (jj_3R_277()) return true;
     return false;
   }
 
   private boolean jj_3_24() {
     if (jj_scan_token(LPAREN)) return true;
     if (jj_3R_76()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_288() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_79()) return true;
     return false;
   }
 
@@ -5454,12 +5454,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_287() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_79()) return true;
-    return false;
-  }
-
   private boolean jj_3R_236() {
     Token xsp;
     xsp = jj_scanpos;
@@ -5470,8 +5464,22 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_287() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_79()) return true;
+    return false;
+  }
+
   private boolean jj_3R_260() {
     if (jj_3R_89()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_233() {
+    if (jj_3R_200()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_236()) jj_scanpos = xsp;
     return false;
   }
 
@@ -5483,14 +5491,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
       xsp = jj_scanpos;
       if (jj_3R_287()) { jj_scanpos = xsp; break; }
     }
-    return false;
-  }
-
-  private boolean jj_3R_233() {
-    if (jj_3R_200()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_236()) jj_scanpos = xsp;
     return false;
   }
 
@@ -5537,11 +5537,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_171() {
-    if (jj_scan_token(INTERFACE)) return true;
-    return false;
-  }
-
   private boolean jj_3R_103() {
     if (jj_scan_token(LPAREN)) return true;
     if (jj_3R_64()) return true;
@@ -5566,6 +5561,11 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     if (jj_3R_104()) return true;
     }
     }
+    return false;
+  }
+
+  private boolean jj_3R_171() {
+    if (jj_scan_token(INTERFACE)) return true;
     return false;
   }
 
@@ -5663,11 +5663,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_60() {
-    if (jj_scan_token(STRICTFP)) return true;
-    return false;
-  }
-
   private boolean jj_3R_220() {
     Token xsp;
     xsp = jj_scanpos;
@@ -5695,13 +5690,13 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_59() {
-    if (jj_scan_token(VOLATILE)) return true;
+  private boolean jj_3R_60() {
+    if (jj_scan_token(STRICTFP)) return true;
     return false;
   }
 
-  private boolean jj_3R_58() {
-    if (jj_scan_token(TRANSIENT)) return true;
+  private boolean jj_3R_59() {
+    if (jj_scan_token(VOLATILE)) return true;
     return false;
   }
 
@@ -5719,8 +5714,8 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_57() {
-    if (jj_scan_token(NATIVE)) return true;
+  private boolean jj_3R_58() {
+    if (jj_scan_token(TRANSIENT)) return true;
     return false;
   }
 
@@ -5731,6 +5726,11 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
       xsp = jj_scanpos;
       if (jj_3R_231()) { jj_scanpos = xsp; break; }
     }
+    return false;
+  }
+
+  private boolean jj_3R_57() {
+    if (jj_scan_token(NATIVE)) return true;
     return false;
   }
 
@@ -5775,11 +5775,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_52() {
-    if (jj_scan_token(PROTECTED)) return true;
-    return false;
-  }
-
   private boolean jj_3_20() {
     if (jj_3R_74()) return true;
     return false;
@@ -5790,8 +5785,8 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_51() {
-    if (jj_scan_token(STATIC)) return true;
+  private boolean jj_3R_52() {
+    if (jj_scan_token(PROTECTED)) return true;
     return false;
   }
 
@@ -5815,8 +5810,8 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_50() {
-    if (jj_scan_token(PUBLIC)) return true;
+  private boolean jj_3R_51() {
+    if (jj_scan_token(STATIC)) return true;
     return false;
   }
 
@@ -5827,6 +5822,11 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
       xsp = jj_scanpos;
       if (jj_3_18()) { jj_scanpos = xsp; break; }
     }
+    return false;
+  }
+
+  private boolean jj_3R_50() {
+    if (jj_scan_token(PUBLIC)) return true;
     return false;
   }
 
@@ -5951,6 +5951,12 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_204() {
+    if (jj_scan_token(XOR)) return true;
+    if (jj_3R_174()) return true;
+    return false;
+  }
+
   private boolean jj_3R_49() {
     if (jj_3R_88()) return true;
     return false;
@@ -5963,12 +5969,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
       if (jj_3R_49()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(PACKAGE)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_204() {
-    if (jj_scan_token(XOR)) return true;
-    if (jj_3R_174()) return true;
     return false;
   }
 
@@ -6086,14 +6086,14 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_17() {
-    if (jj_3R_71()) return true;
-    if (jj_3R_72()) return true;
+  private boolean jj_3R_306() {
+    if (jj_3R_315()) return true;
     return false;
   }
 
-  private boolean jj_3R_306() {
-    if (jj_3R_315()) return true;
+  private boolean jj_3_17() {
+    if (jj_3R_71()) return true;
+    if (jj_3R_72()) return true;
     return false;
   }
 
@@ -6105,9 +6105,22 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3R_315() {
+    if (jj_scan_token(_DEFAULT)) return true;
+    if (jj_3R_87()) return true;
+    return false;
+  }
+
   private boolean jj_3R_292() {
     if (jj_scan_token(COMMA)) return true;
     if (jj_3R_85()) return true;
+    return false;
+  }
+
+  private boolean jj_3_44() {
+    if (jj_3R_64()) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(LPAREN)) return true;
     return false;
   }
 
@@ -6118,19 +6131,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
       xsp = jj_scanpos;
       if (jj_3R_292()) { jj_scanpos = xsp; break; }
     }
-    return false;
-  }
-
-  private boolean jj_3R_315() {
-    if (jj_scan_token(_DEFAULT)) return true;
-    if (jj_3R_87()) return true;
-    return false;
-  }
-
-  private boolean jj_3_44() {
-    if (jj_3R_64()) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(LPAREN)) return true;
     return false;
   }
 
@@ -6166,12 +6166,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3_16() {
-    if (jj_scan_token(DOT)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
   private boolean jj_3R_298() {
     if (jj_3R_84()) return true;
     Token xsp;
@@ -6202,6 +6196,17 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3_16() {
+    if (jj_scan_token(DOT)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_286() {
+    if (jj_3R_294()) return true;
+    return false;
+  }
+
   private boolean jj_3R_85() {
     if (jj_scan_token(IDENTIFIER)) return true;
     Token xsp;
@@ -6209,11 +6214,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
       xsp = jj_scanpos;
       if (jj_3_16()) { jj_scanpos = xsp; break; }
     }
-    return false;
-  }
-
-  private boolean jj_3R_286() {
-    if (jj_3R_294()) return true;
     return false;
   }
 
@@ -6241,6 +6241,12 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
+  private boolean jj_3_43() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_87()) return true;
+    return false;
+  }
+
   private boolean jj_3R_110() {
     if (jj_scan_token(VOID)) return true;
     return false;
@@ -6253,12 +6259,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     jj_scanpos = xsp;
     if (jj_3R_111()) return true;
     }
-    return false;
-  }
-
-  private boolean jj_3_43() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_87()) return true;
     return false;
   }
 
@@ -6352,12 +6352,6 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_190() {
-    if (jj_scan_token(SUPER)) return true;
-    if (jj_3R_69()) return true;
-    return false;
-  }
-
   private boolean jj_3R_146() {
     if (jj_3R_154()) return true;
     Token xsp;
@@ -6368,20 +6362,35 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_189() {
-    if (jj_scan_token(EXTENDS)) return true;
-    if (jj_3R_69()) return true;
+  private boolean jj_3R_138() {
+    if (jj_3R_146()) return true;
     return false;
   }
 
-  private boolean jj_3R_138() {
-    if (jj_3R_146()) return true;
+  private boolean jj_3R_190() {
+    if (jj_scan_token(SUPER)) return true;
+    if (jj_3R_69()) return true;
     return false;
   }
 
   private boolean jj_3R_86() {
     if (jj_scan_token(IDENTIFIER)) return true;
     if (jj_scan_token(ASSIGN)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_189() {
+    if (jj_scan_token(EXTENDS)) return true;
+    if (jj_3R_69()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_130() {
+    if (jj_scan_token(AT)) return true;
+    if (jj_3R_85()) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_87()) return true;
+    if (jj_scan_token(RPAREN)) return true;
     return false;
   }
 
@@ -6395,23 +6404,9 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_130() {
-    if (jj_scan_token(AT)) return true;
-    if (jj_3R_85()) return true;
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_87()) return true;
-    if (jj_scan_token(RPAREN)) return true;
-    return false;
-  }
-
   private boolean jj_3R_131() {
     if (jj_scan_token(AT)) return true;
     if (jj_3R_85()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_151() {
-    if (jj_3R_172()) return true;
     return false;
   }
 
@@ -6446,16 +6441,8 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_125() {
-    if (jj_scan_token(HOOK)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_151()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3R_124() {
-    if (jj_3R_69()) return true;
+  private boolean jj_3R_151() {
+    if (jj_3R_172()) return true;
     return false;
   }
 
@@ -6473,13 +6460,16 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     return false;
   }
 
-  private boolean jj_3R_99() {
+  private boolean jj_3R_125() {
+    if (jj_scan_token(HOOK)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_124()) {
-    jj_scanpos = xsp;
-    if (jj_3R_125()) return true;
-    }
+    if (jj_3R_151()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_124() {
+    if (jj_3R_69()) return true;
     return false;
   }
 
@@ -6498,6 +6488,20 @@ public class OtherChecker extends Checker implements OtherCheckerConstants {
     if (jj_3R_118()) return true;
     }
     }
+    return false;
+  }
+
+  private boolean jj_3R_99() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_124()) {
+    jj_scanpos = xsp;
+    if (jj_3R_125()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_102() {
     return false;
   }
 

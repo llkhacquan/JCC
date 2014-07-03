@@ -36,7 +36,9 @@ public enum RuleType {
 			"Name of %r should start by a lower case letter (%w)"),
 
 	NAMING_StartByUpperCase(
-			"Name of %r should start by an upper case letter (%w)");
+			"Name of %r should start by an upper case letter (%w)"),
+
+	WHILE_MustUseBracket("Brackets { } must be used in 'while' statement");
 
 	public final static String RuleArg = "%r";
 	public final static String WarningArg = "%w";

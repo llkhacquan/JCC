@@ -19,3 +19,5 @@ NAMING_StartByLowerCase(active, FILE, field);
 NAMING_StartByLowerCase(active, FILE, variable);
 NAMING_StartByLowerCase(active, FILE, class);
 NAMING_StartByLowerCase(active, FILE, parameter);
+
+WHILE_MustUseBracket(active, FILE);

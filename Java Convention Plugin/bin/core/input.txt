@@ -31,6 +31,11 @@ public class JCCHandler {
 			test2;
 		} else 
 		 	test3;
+		
+		int i = 9;
+		while (i>0)
+		 	i--;
+		 	
 		switch (t){
 		 	case 123:
 		 	// do something
