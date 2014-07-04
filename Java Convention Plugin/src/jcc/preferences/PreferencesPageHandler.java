@@ -13,6 +13,7 @@ public class PreferencesPageHandler extends FieldEditorPreferencePage implements
 
 	private FileFieldEditor rulesFile;
 	private BooleanFieldEditor loadRulesInCheck;
+	private BooleanFieldEditor checkIndent;
 
 	public PreferencesPageHandler() {
 		super(GRID);
@@ -22,12 +23,10 @@ public class PreferencesPageHandler extends FieldEditorPreferencePage implements
 
 	public void init(IWorkbench workbench) {
 		Activator.getDefault().getPreferenceStore();
-
 	}
 
 	@Override
 	protected void createFieldEditors() {
-		// TODO Auto-generated method stub
 		rulesFile = new FileFieldEditor(PreferenceConstants.P_RULES_FILE,
 				"Rules file", true, getFieldEditorParent());
 		addField(rulesFile);
@@ -35,8 +34,12 @@ public class PreferencesPageHandler extends FieldEditorPreferencePage implements
 		loadRulesInCheck = new BooleanFieldEditor(
 				PreferenceConstants.P_RELOAD_RULES_WHEN_CHECK,
 				"Reload rules when check", getFieldEditorParent());
-
 		addField(loadRulesInCheck);
+
+		checkIndent = new BooleanFieldEditor(
+				PreferenceConstants.P_CHECK_INDENT, "Check indent",
+				getFieldEditorParent());
+		addField(checkIndent);
 
 	}
 
@@ -53,5 +56,10 @@ public class PreferencesPageHandler extends FieldEditorPreferencePage implements
 	public static boolean reloadRulesWhenCheck() {
 		return Activator.getDefault().getPreferenceStore()
 				.getBoolean(PreferenceConstants.P_RELOAD_RULES_WHEN_CHECK);
+	}
+
+	public static boolean checkIndent() {
+		return Activator.getDefault().getPreferenceStore()
+				.getBoolean(PreferenceConstants.P_CHECK_INDENT);
 	}
 }

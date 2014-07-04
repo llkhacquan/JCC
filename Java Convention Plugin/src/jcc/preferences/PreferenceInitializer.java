@@ -21,7 +21,9 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	 */
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		rm = RulesManager.createRulesManager(store.getString(PreferenceConstants.P_RULES_FILE));
+		rm = RulesManager.createRulesManager(store
+				.getString(PreferenceConstants.P_RULES_FILE));
+
 	}
 
 }

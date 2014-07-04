@@ -70,7 +70,8 @@ public class CompilationParticipantHandler extends CompilationParticipant {
 					if (PreferencesPageHandler.reloadRulesWhenCheck())
 						reloadRulesManager();
 					for (CheckOptions o : CheckOptions.values())
-//						if (o != CheckOptions.CHECK_TYPE_INDENT)
+						if (o != CheckOptions.CHECK_TYPE_INDENT
+								|| PreferencesPageHandler.checkIndent())
 							w.addAll(CoreHandler.check(file.getContents(), rm,
 									o));
 
