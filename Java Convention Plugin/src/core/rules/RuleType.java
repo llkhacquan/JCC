@@ -19,18 +19,11 @@ public enum RuleType {
 
 	FILE_MustHavePackageDeclaration("File must have be packed in package"),
 
-	FILE_MustHaveBlankLinesInEOF("File must have a blink line in the end"),
-
-	GENERAL_MustUseAnnotation("Annotation should be used here"),
-
 	COMMENT_MustHaveJavaDoc("Javadoc comment should be used before %r %w"),
 
 	COMMENT_MustHaveBlockComment("Block comment should be used before %r %w"),
 
 	CLASS_MustHaveDefaultConstructor("Class '%w' must have default constructor"),
-
-	WRAPLINE_NotAllowTooLongLine(
-			"This line's length is larger than %r, it should be shorted"),
 
 	NAMING_StartByLowerCase(
 			"Name of %r should start by a lower case letter (%w)"),

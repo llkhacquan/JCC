@@ -23,7 +23,6 @@ public class Warning {
 	}
 	
 	public String toString() {
-		// TODO Auto-generated method stub
 		return args[0];
 	}
 }

@@ -3,12 +3,15 @@ package core.checker;
 import core.rules.RuleRange;
 
 public final class State {
+	// boolean state(true or false)
+	
 	public boolean isFinal;
 	public boolean isField;
 	public boolean isParameter;
 	public boolean isInSwitch;
 	public boolean switchHasDefault;
 
+	// state define where we are in the code
 	public String inClass;
 	public String inInterface;
 	public String inEnum;

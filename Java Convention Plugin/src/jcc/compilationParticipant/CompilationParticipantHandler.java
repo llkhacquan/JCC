@@ -39,7 +39,6 @@ public class CompilationParticipantHandler extends CompilationParticipant {
 			project.getProject().deleteMarkers(MARKER_TYPE, true,
 					IResource.DEPTH_INFINITE);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -71,7 +70,7 @@ public class CompilationParticipantHandler extends CompilationParticipant {
 					if (PreferencesPageHandler.reloadRulesWhenCheck())
 						reloadRulesManager();
 					for (CheckOptions o : CheckOptions.values())
-						if (o != CheckOptions.CHECK_TYPE_INDENT)
+//						if (o != CheckOptions.CHECK_TYPE_INDENT)
 							w.addAll(CoreHandler.check(file.getContents(), rm,
 									o));
 
@@ -87,7 +86,6 @@ public class CompilationParticipantHandler extends CompilationParticipant {
 								IMarker.SEVERITY_INFO);
 					}
 				} catch (CoreException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					return;
 				}

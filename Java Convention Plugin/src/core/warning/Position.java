@@ -33,6 +33,20 @@ public class Position {
 		endColumn = t.endColumn;
 		this.type = type;
 		this.name = name;
+		
+		StringBuilder s = new StringBuilder();
+		for (int i = 0; i < s.length(); i++){
+			if (s.charAt(i)=='\t')
+				s.setCharAt(i, 't');
+			if (s.charAt(i)=='\n')
+				s.setCharAt(i, 'n');
+			if (s.charAt(i)=='\r')
+				s.setCharAt(i, 'r');
+			if (s.charAt(i)=='\f')
+				s.setCharAt(i, 'f');
+			if (s.charAt(i)==' ')
+				s.setCharAt(i, '_');			
+		}
 	}
 
 	public Position(int bLine, int eLine, int bCol, int eCol) {

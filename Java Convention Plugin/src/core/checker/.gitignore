@@ -7,3 +7,6 @@
 /NamingChecker.java
 /NamingCheckerConstants.java
 /NamingCheckerTokenManager.java
+/IndentChecker.java
+/IndentCheckerConstants.java
+/IndentCheckerTokenManager.java
